@@ -2,174 +2,78 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- permissions -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
-    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
-    <uses-permission android:name="android.permission.GET_PACKAGE_SIZE" />
+    <!-- ===== PERMISSIONS ===== -->
+    <!-- Device Admin -->
+    <uses-permission android:name="android.permission.MANAGE_USERS" />
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
+    <!-- System Integration -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+
+    <!-- Biometric -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
+    <!-- Process & Usage -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="29"
-        tools:ignore="ScopedStorage" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+
+    <!-- Network (for updates) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Storage -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- Notification -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
-    <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
     <application
         android:name=".DualPersonaApp"
         android:allowBackup="false"
-        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:largeHeap="true"
-        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DualPersona"
+        android:persistent="true"
+        android:directBootAware="true"
         tools:targetApi="34">
 
-        <!-- ===================== ACTIVITIES ===================== -->
+        <!-- ===== MAIN ACTIVITIES ===== -->
 
-        <!-- Splash / Setup -->
+        <!-- Setup Wizard - shown only on first launch -->
         <activity
-            android:name=".activities.SplashActivity"
-            android:clearTaskOnLaunch="true"
+            android:name=".ui.setup.SetupWizardActivity"
             android:exported="true"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.DualPersona.Splash">
+            android:taskAffinity=""
+            android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Lock Screen -->
+        <!-- Hidden Dashboard - accessible only via secret code -->
         <activity
-            android:name=".activities.LockScreenActivity"
-            android:clearTaskOnLaunch="true"
+            android:name=".ui.dashboard.DashboardActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:taskAffinity=""
             android:excludeFromRecents="true"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:showOnLockScreen="true"
-            android:showWhenLocked="true"
-            android:turnScreenOn="true"
-            android:theme="@style/Theme.DualPersona.LockScreen" />
+            android:theme="@style/Theme.DualPersona.Stealth" />
 
-        <!-- Main Launcher Home -->
-        <activity
-            android:name=".activities.LauncherHomeActivity"
-            android:clearTaskOnLaunch="true"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:stateNotNeeded="true"
-            android:theme="@style/Theme.DualPersona.Launcher">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.HOME" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <!-- Setup Wizard -->
-        <activity
-            android:name=".activities.SetupWizardActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.DualPersona.Setup" />
-
-        <!-- Environment Settings -->
-        <activity
-            android:name=".activities.EnvironmentSettingsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <!-- App Manager -->
-        <activity
-            android:name=".activities.AppManagerActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <!-- Emergency Mode Setup -->
-        <activity
-            android:name=".activities.EmergencySetupActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <!-- Security Settings -->
-        <activity
-            android:name=".activities.SecuritySettingsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <!-- Theme Settings -->
-        <activity
-            android:name=".activities.ThemeSettingsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <!-- Backup & Restore -->
-        <activity
-            android:name=".activities.BackupRestoreActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <!-- ===================== SERVICES ===================== -->
-
-        <service
-            android:name=".service.LockScreenService"
-            android:exported="false"
-            android:foregroundServiceType="specialUse"
-            android:permission="android.permission.FOREGROUND_SERVICE" />
-
-        <service
-            android:name=".service.EnvironmentService"
-            android:exported="false"
-            android:foregroundServiceType="specialUse" />
-
-        <!-- ===================== RECEIVERS ===================== -->
-
+        <!-- ===== DEVICE ADMIN ===== -->
         <receiver
-            android:name=".receiver.BootReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".receiver.ScreenReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.SCREEN_OFF" />
-                <action android:name="android.intent.action.SCREEN_ON" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Device Admin -->
-        <receiver
-            android:name=".receiver.DeviceAdminReceiver"
+            android:name=".receiver.DualPersonaAdmin"
             android:exported="true"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
@@ -177,8 +81,87 @@
                 android:resource="@xml/device_admin" />
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
+                <action android:name="android.app.action.ACTION_PASSWORD_CHANGED" />
+                <action android:name="android.app.action.ACTION_PASSWORD_FAILED" />
+                <action android:name="android.app.action.ACTION_PASSWORD_SUCCEEDED" />
             </intent-filter>
         </receiver>
 
+        <!-- ===== BROADCAST RECEIVERS ===== -->
+
+        <!-- Boot Receiver - starts services after reboot -->
+        <receiver
+            android:name=".receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:directBootAware="true">
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- User Switch Receiver - monitors profile switches -->
+        <receiver
+            android:name=".receiver.UserSwitchReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.USER_SWITCHED" />
+                <action android:name="android.intent.action.USER_FOREGROUND" />
+                <action android:name="android.intent.action.USER_BACKGROUND" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Secret Dial Receiver - access app via *#*#CODE#*#* -->
+        <receiver
+            android:name=".receiver.SecretDialReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SECRET_CODE" />
+                <data android:scheme="android_secret_code" />
+            </intent-filter>
+        </receiver>
+
+        <!-- ===== FOREGROUND SERVICES ===== -->
+
+        <!-- Main System Service -->
+        <service
+            android:name=".service.SystemService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Dual persona user management and data isolation" />
+        </service>
+
+        <!-- Guard Service - continuous monitoring -->
+        <service
+            android:name=".service.GuardService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Security monitoring and data isolation enforcement" />
+        </service>
+
+        <!-- ===== PROVIDERS ===== -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
     </application>
+
 </manifest>

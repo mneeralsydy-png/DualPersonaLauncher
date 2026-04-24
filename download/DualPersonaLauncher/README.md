@@ -1,174 +1,279 @@
-# Dual Persona Launcher — Secure Dual Space OS
+# Dual Persona System
 
-## 📱 نظرة عامة
+## System-Integrated Dual Profile Manager for Android
 
-تطبيق أندرويد يتيح إنشاء بيئتين (أو ثلاث) منفصلتين تمامًا داخل نفس الهاتف. يتم التبديل بين البيئات عبر إدخال رمز PIN مختلف عند شاشة القفل.
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Android_10+-green" />
+  <img src="https://img.shields.io/badge/Language-Kotlin-blue" />
+  <img src="https://img.shields.io/badge/Min_SDK-28-orange" />
+  <img src="https://img.shields.io/badge/Target_SDK-34-red" />
+  <img src="https://img.shields.io/badge/License-MIT-yellow" />
+</p>
 
-## 🎯 الميزات الرئيسية
+---
 
-### 🔐 شاشة قفل مخصصة
-- إدخال PIN (4-6 أرقام)
-- دعم البصمة (Biometric)
-- أنيميشن على الأزرار والنقاط
-- اهتزاز عند الإدخال والخطأ
+## Overview
 
-### 🧱 بيئات متعددة
-- **البيئة الأساسية (Primary Space)**: بيئة الهاتف العادية
-- **البيئة المخفية (Hidden Space)**: بيئة سرية بتطبيقات وملفات منفصلة
-- **بيئة الطوارئ (Emergency Space)**: بيئة وهمية لخداع من يجبرك على فتح الهاتف
+Dual Persona System transforms a single Android device into two completely separate phones, integrated directly at the **system level**. It is NOT a launcher — it uses Android's native multi-user architecture to create two fully isolated environments.
 
-### 📱 لانشر مزدوج
-- واجهة مستخدم مختلفة لكل بيئة
-- شبكة تطبيقات قابلة للتخصيص (3x3 إلى 6x6)
-- درج تطبيقات (App Drawer) مع بحث
-- دعم إخفاء التطبيقات
+### How It Works
 
-### 🔒 نظام أمان متقدم
-- تشفير AES-256-GCM للبيانات
-- تجزئة PBKDF2-HMAC-SHA256 للرموز
-- Android KeyStore لحماية المفاتيح
-- تشفير EncryptedSharedPreferences
-- وضع التخفي (Stealth Mode)
-- كشف التسلل (Intrusion Detection)
-- التدمير الذاتي (Self Destruct)
+1. **System Lock Screen**: Uses the standard Android lock screen (PIN / Pattern / Fingerprint)
+2. **Two Credentials**: Each profile has its own lock screen credential
+3. **Automatic Switching**: When you unlock with credential A, you get Profile A. Credential B gives you Profile B
+4. **Complete Isolation**: Each profile has independent apps, data, photos, contacts, messages, and settings
+5. **Stealth Mode**: After setup, the app disappears completely from the phone
 
-### 🗂️ عزل البيانات
-- مجلدات منفصلة لكل بيئة
-- تشفير ملفات البيئة المخفية
-- مسح آمن (Secure Wipe)
-- نسخ احتياطي مشفر
+### NOT a Launcher
 
-## 🛠️ البنية التقنية
+This is a **system-level integration tool**, not a home screen replacement:
+- No custom lock screen
+- No custom home screen
+- No custom app drawer
+- Uses Android's native lock screen and user system
+- Completely invisible after setup
+
+---
+
+## Features
+
+### Core Functionality
+| Feature | Description |
+|---------|-------------|
+| **Dual User Profiles** | Creates a secondary Android user with complete data isolation |
+| **System Lock Screen** | Uses native Android PIN/Pattern/Fingerprint |
+| **Auto Profile Switching** | System automatically loads the correct profile based on unlock credential |
+| **Data Isolation** | Separate storage, apps, contacts, photos, messages per profile |
+| **Stealth Mode** | App disappears after setup — accessible only via secret dialer code |
+| **Secret Dialer Access** | Access dashboard by dialing *#*#CODE#*#* |
+| **Device Admin** | System-level permissions for full user management |
+
+### Security
+| Feature | Description |
+|---------|-------------|
+| **AES-256-GCM Encryption** | All app data encrypted at rest |
+| **Android Keystore** | Keys stored in hardware-backed keystore |
+| **Encrypted Preferences** | All settings encrypted using EncryptedSharedPreferences |
+| **Security Logging** | All events logged with timestamps and severity |
+| **Isolation Verification** | Periodic checks to ensure data isolation is maintained |
+| **Suspicious Activity Detection** | Monitors for cross-user data access attempts |
+| **Failed Attempt Tracking** | Lockout protection after too many wrong credentials |
+
+### Management
+| Feature | Description |
+|---------|-------------|
+| **Hidden Dashboard** | Full control panel accessible via secret code |
+| **User Switching** | Switch between profiles from dashboard |
+| **Profile Customization** | Set names, themes, notification policies per profile |
+| **Security Logs** | View all security events |
+| **Secret Code Customization** | Change the dialer access code |
+| **Complete Reset** | Remove secondary user and reset system |
+
+---
+
+## Technical Architecture
+
+### System Integration
 
 ```
-app/src/main/java/com/dualpersona/launcher/
-├── DualPersonaApp.kt                    # Application class
-├── activities/
-│   ├── SplashActivity.kt                # شاشة البداية
-│   ├── LockScreenActivity.kt            # شاشة القفل
-│   ├── LauncherHomeActivity.kt          # الشاشة الرئيسية
-│   ├── SetupWizardActivity.kt           # معالج الإعداد
-│   ├── EnvironmentSettingsActivity.kt   # إعدادات البيئة
-│   ├── SecuritySettingsActivity.kt      # إعدادات الأمان
-│   ├── AppManagerActivity.kt            # إدارة التطبيقات
-│   ├── ThemeSettingsActivity.kt         # إعدادات المظهر
-│   ├── EmergencySetupActivity.kt        # إعداد الطوارئ
-│   └── BackupRestoreActivity.kt         # النسخ الاحتياطي
-├── security/
-│   ├── EncryptionManager.kt             # AES-256-GCM + PBKDF2
-│   ├── AuthManager.kt                   # إدارة المصادقة
-│   └── StealthManager.kt               # وضع التخفي
-├── engine/
-│   └── EnvironmentEngine.kt             # محرك البيئات
-├── isolation/
-│   ├── DataIsolationManager.kt          # عزل الملفات
-│   └── SandboxManager.kt                # إدارة الصناديق الرملية
-├── launcher/
-│   ├── HomeAppAdapter.kt                # محول الشاشة الرئيسية
-│   └── AppDrawerAdapter.kt              # محول درج التطبيقات
-├── data/
-│   ├── AppDatabase.kt                   # قاعدة بيانات Room
-│   ├── entity/
-│   │   ├── AppInfoEntity.kt
-│   │   ├── WallpaperEntity.kt
-│   │   └── SecurityEventEntity.kt
-│   └── dao/
-│       ├── AppInfoDao.kt
-│       ├── WallpaperDao.kt
-│       └── SecurityEventDao.kt
-├── service/
-│   ├── LockScreenService.kt             # خدمة شاشة القفل
-│   └── EnvironmentService.kt            # خدمة البيئة
+┌─────────────────────────────────────────────────────┐
+│                   Android System                      │
+│                                                       │
+│  ┌──────────────────┐    ┌──────────────────┐        │
+│  │    User A (0)    │    │    User B (1)    │        │
+│  │                  │    │                  │        │
+│  │  - Own PIN       │    │  - Own PIN       │        │
+│  │  - Own Apps      │    │  - Own Apps      │        │
+│  │  - Own Data      │    │  - Own Data      │        │
+│  │  - Own Storage   │    │  - Own Storage   │        │
+│  │  - Own Contacts  │    │  - Own Contacts  │        │
+│  └──────────────────┘    └──────────────────┘        │
+│                                                       │
+│  ┌─────────────────────────────────────┐              │
+│  │         Dual Persona System          │              │
+│  │  ┌─────────────┐ ┌──────────────┐  │              │
+│  │  │SystemService│ │ GuardService │  │              │
+│  │  └─────────────┘ └──────────────┘  │              │
+│  │  ┌──────────────┐ ┌─────────────┐  │              │
+│  │  │StealthManager│ │ DataGuard   │  │              │
+│  │  └──────────────┘ └─────────────┘  │              │
+│  └─────────────────────────────────────┘              │
+└─────────────────────────────────────────────────────┘
+```
+
+### Key Components
+
+```
+com.dualpersona.system/
+├── DualPersonaApp.kt              # Application class
+├── core/
+│   ├── SystemUserManager.kt       # Android UserManager integration
+│   ├── CredentialManager.kt       # Lock screen credential management
+│   ├── StealthManager.kt          # App hiding/revealing
+│   ├── EnvironmentConfig.kt       # Per-profile configuration
+│   └── DataGuard.kt               # Data isolation enforcement
+├── ui/
+│   ├── setup/
+│   │   └── SetupWizardActivity.kt # Multi-step setup wizard
+│   └── dashboard/
+│       └── DashboardActivity.kt   # Hidden management panel
 ├── receiver/
-│   ├── BootReceiver.kt                  # مستقبل التشغيل
-│   ├── ScreenReceiver.kt               # مستقبل الشاشة
-│   └── DeviceAdminReceiver.kt          # مستقبل مسؤول الجهاز
-└── utils/
-    ├── Constants.kt                     # الثوابت
-    └── PreferencesManager.kt            # إدارة التفضيلات
+│   ├── DualPersonaAdmin.kt        # Device Admin receiver
+│   ├── BootReceiver.kt            # Auto-start on boot
+│   ├── UserSwitchReceiver.kt      # Monitor user switches
+│   └── SecretDialReceiver.kt      # Dialer code access
+├── service/
+│   ├── SystemService.kt           # Main background service
+│   └── GuardService.kt            # Security monitoring
+└── data/
+    ├── PreferencesManager.kt      # Encrypted preferences
+    └── SecurityLog.kt             # Security event logging
 ```
 
-## 🚀 كيفية التشغيل
+---
 
-### المتطلبات
-- **Android Studio**: Iguana (2023.2.1) أو أحدث
-- **Gradle**: 8.5
-- **Kotlin**: 1.9.22
-- **Min SDK**: 28 (Android 9.0 Pie)
-- **Target SDK**: 34 (Android 14)
+## Setup Process
 
-### خطوات التثبيت
+### Step 1: Welcome
+Overview of what Dual Persona System does.
 
-1. **استنساخ/نسخ المشروع**
-   ```bash
-   cd DualPersonaLauncher
-   ```
+### Step 2: Permissions
+- **Device Administrator**: Required for system-level user management
+- Notification Access: For service management
 
-2. **فتح المشروع**
-   - افتح Android Studio
-   - اختر "Open an existing Android Studio project"
-   - حدد مجلد المشروع
+### Step 3: Configure Profile A
+- Set profile name (e.g., "Personal", "Main")
+- Choose credential type (PIN/Pattern/Password/Fingerprint)
+- Set credential through Android Settings
 
-3. **مزامنة Gradle**
-   - انتظر حتى تكتمل مزامنة Gradle
-   - إذا طُلب، قم بتثبيت SDK المطلوب
+### Step 4: Configure Profile B
+- Set profile name (e.g., "Work", "Private")
+- Choose credential type
+- App creates secondary Android user
+- Set credential for Profile B through Android Settings
 
-4. **تشغيل التطبيق**
-   - اختر جهاز أو محاكي (API 28+)
-   - اضغط Run
+### Step 5: Security Settings
+- Set secret dialer code (default: 7890)
+- Enable stealth mode
+- Configure max failed attempts
 
-### الإعداد الأولي
+### Step 6: Activate
+- Services start in background
+- Stealth mode activates (if enabled)
+- App disappears from device
 
-عند فتح التطبيق لأول مرة:
+---
 
-1. **شاشة الترحيب** — معلومات عن التطبيق
-2. **إعداد PIN الأساسي** — رمز البيئة العادية (مثلاً: 1234)
-3. **تأكيد PIN الأساسي** — إعادة إدخال الرمز
-4. **إعداد PIN المخفي** — رمز البيئة السرية (مثلاً: 4321)
-5. **تأكيد PIN المخفي** — إعادة إدخال الرمز
-6. **إعداد PIN الطوارئ** (اختياري) — رمز البيئة الوهمية
-7. **البصمة** (اختياري) — تفعيل فتح بالبصمة
-8. **إنهاء** — جاهز للاستخدام!
+## Usage After Setup
 
-## 🔧 التقنيات المستخدمة
+### Switching Profiles
+1. Lock your phone (power button)
+2. On the lock screen, enter the credential for the desired profile
+3. Android automatically loads that profile
 
-| التقنية | الاستخدام |
-|---------|-----------|
-| Kotlin | اللغة الأساسية |
-| Android SDK 34 | منصة التطوير |
-| Room Database | قاعدة البيانات المحلية |
-| AES-256-GCM | تشفير البيانات |
-| PBKDF2-HMAC-SHA256 | تجزئة كلمات المرور |
-| Android KeyStore | تخزين آمن للمفاتيح |
-| EncryptedSharedPreferences | تفضيلات مشفرة |
-| BiometricPrompt | المصادقة بالبصمة |
-| Material Design 3 | واجهة المستخدم |
-| Coroutines + Flow | البرمجة غير المتزامنة |
-| Work Manager | المهام في الخلفية |
+### Accessing Hidden Dashboard
+1. Open the phone dialer
+2. Dial your secret code: *#*#7890#*#*
+3. Dashboard appears with full management options
+4. Dashboard auto-hides after 30 seconds
 
-## 🧪 سيناريو الاستخدام
+### Switching via Dashboard
+1. Open dashboard via secret code
+2. Tap "Switch to Profile A" or "Switch to Profile B"
 
-1. المستخدم يشغل الهاتف ← تظهر شاشة القفل
-2. يدخل `1234` ← يفتح الهاتف العادي (Primary Space)
-3. يعيد القفل ← يدخل `4321` ← يفتح الهاتف السري (Hidden Space)
-4. في حالة الإجبار ← يدخل `9999` ← يفتح بيئة وهمية (Emergency Space)
+---
 
-## ⚠️ التحديات والملاحظات
+## Requirements
 
-- **بدون Root**: العزل ليس 100% كاملاً (يعتمد على Work Profile)
-- **مع Root**: يمكن تعديل AOSP لتحقيق عزل حقيقي
-- **الأداء**: استخدام الخدمات قد يؤثر على البطارية
-- **الشاشة الأصلية**: لا يمكن استبدال شاشة القفل الأصلية بالكامل بدون صلاحيات
+- **Android 9+ (API 28)** minimum
+- **Device Admin permissions** (granted during setup)
+- **Multi-user support** (most modern phones support this)
+- **Fingerprint hardware** (optional, for biometric credentials)
 
-## 📋 الصلاحيات المطلوبة
+### Device Compatibility
+- Works best on stock/near-stock Android (Pixel, Motorola, Nokia, etc.)
+- Some manufacturers may restrict multi-user features
+- Samsung devices may have limitations ( Knox )
+- Root NOT required but provides enhanced functionality
 
-- `QUERY_ALL_PACKAGES` — لسرد جميع التطبيقات
-- `USE_BIOMETRIC` — للبصمة
-- `SYSTEM_ALERT_WINDOW` — لعرض شاشة القفل
-- `FOREGROUND_SERVICE` — للخدمات الخلفية
-- `RECEIVE_BOOT_COMPLETED` — للتشغيل عند الإقلاع
-- `Device Admin` — لسياسات الأمان
+---
 
-## 📄 الرخصة
+## Security Model
 
-هذا المشروع لأغراض تعليمية وتطويرية.
+### Data Isolation
+Android's multi-user architecture provides kernel-level isolation:
+- Each user has a separate Linux UID
+- Each user has separate storage partitions (`/data/user/<id>/`)
+- Apps cannot access other users' data
+- File-based encryption (FBE) ensures data at rest is encrypted
+
+### Encryption
+- All app preferences encrypted with **AES-256-GCM**
+- Keys stored in **Android Keystore** (hardware-backed)
+- PBKDF2 key derivation for sensitive operations
+- EncryptedSharedPreferences for all settings
+
+### Monitoring
+- Periodic isolation verification (every 5 minutes)
+- Security event logging with severity levels
+- Suspicious activity detection and alerting
+- Failed authentication tracking with lockout
+
+---
+
+## Build Instructions
+
+### Prerequisites
+- Android Studio Hedgehog or newer
+- JDK 17
+- Android SDK 34
+- Gradle 8.5+
+
+### Build Steps
+```bash
+# Clone the repository
+git clone https://github.com/mneeralsydy-png/DualPersonaLauncher.git
+cd DualPersonaLauncher
+
+# Build debug APK
+./gradlew assembleDebug
+
+# Build release APK
+./gradlew assembleRelease
+
+# APK location
+# Debug: app/build/outputs/apk/debug/app-debug.apk
+# Release: app/build/outputs/apk/release/app-release.apk
+```
+
+---
+
+## Important Notes
+
+1. **After setup, the app is NOT visible** — it runs entirely in the background
+2. **Each user sets their own credential** through Android Settings > Security
+3. **The system lock screen is unchanged** — it works exactly as before
+4. **Access the app ONLY via secret dialer code** (*#*#CODE#*#*)
+5. **Secondary user data is completely separate** — apps, photos, contacts, messages
+6. **Factory reset removes both profiles** — backup important data before resetting
+
+---
+
+## How This Differs from a Launcher
+
+| Feature | This App | Traditional Launcher |
+|---------|----------|---------------------|
+| Lock Screen | Uses system lock screen | Custom lock screen |
+| Home Screen | System default | Custom home screen |
+| User Isolation | Kernel-level (separate UIDs) | App-level (same user) |
+| Data Separation | Complete (different partitions) | Simulated |
+| Credential Integration | System credentials | App-managed credentials |
+| Visibility | Completely invisible | Visible as launcher |
+| User Switching | Native Android user switching | App-level switching |
+| System Integration | Full (Device Admin) | Limited (just launcher) |
+
+---
+
+## License
+
+MIT License - Free for personal and commercial use.

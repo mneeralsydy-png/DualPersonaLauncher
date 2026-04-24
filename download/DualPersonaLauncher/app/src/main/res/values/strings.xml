@@ -1,163 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Dual Space</string>
+    <!-- ===== Setup Wizard ===== -->
+    <string name="setup_welcome_desc">Transform your phone into two completely separate devices. Each profile has its own apps, data, photos, contacts, and lock screen credential.\n\nWhen you unlock the phone, the system automatically loads the profile that matches your credential. No app launcher needed — full system integration.</string>
 
-    <!-- Lock Screen -->
-    <string name="lock_screen_title">Enter PIN to Unlock</string>
-    <string name="lock_screen_subtitle_primary">Primary Space</string>
-    <string name="lock_screen_subtitle_hidden">Hidden Space</string>
-    <string name="lock_screen_subtitle_emergency">Emergency Mode</string>
-    <string name="lock_screen_enter_pin">Enter your PIN</string>
-    <string name="lock_screen_error_wrong_pin">Wrong PIN, try again</string>
-    <string name="lock_screen_fingerprint_hint">Or use fingerprint</string>
-    <string name="lock_screen_pattern_hint">Draw your pattern</string>
-    <string name="lock_screen_choose_method">Choose unlock method</string>
+    <string name="setup_permissions_title">System Permissions</string>
+    <string name="setup_permissions_desc">Dual Persona System needs special permissions to manage user profiles at the system level.</string>
 
-    <!-- Setup -->
-    <string name="setup_welcome_title">Welcome to Dual Space</string>
-    <string name="setup_welcome_desc">Create two separate environments on your phone with different apps, files, and accounts.</string>
-    <string name="setup_set_primary_pin">Set Primary PIN</string>
-    <string name="setup_set_hidden_pin">Set Hidden Space PIN</string>
-    <string name="setup_confirm_pin">Confirm PIN</string>
-    <string name="setup_pin_mismatch">PINs do not match</string>
-    <string name="setup_enable_fingerprint">Enable Fingerprint (Optional)</string>
-    <string name="setup_emergency_pin">Set Emergency PIN (Optional)</string>
-    <string name="setup_emergency_desc">A third PIN that opens a fake environment to protect your hidden space.</string>
-    <string name="setup_complete">Setup Complete!</string>
-    <string name="setup_next">Next</string>
-    <string name="setup_back">Back</string>
-    <string name="setup_finish">Finish</string>
-    <string name="setup_skip">Skip</string>
+    <string name="setup_user_a_title">Configure Profile A</string>
+    <string name="setup_user_a_desc">This is your primary profile. You\'ll set its name and lock screen credential through Android\'s security settings.</string>
 
-    <!-- Launcher -->
-    <string name="launcher_primary_space">Primary Space</string>
-    <string name="launcher_hidden_space">Hidden Space</string>
-    <string name="launcher_emergency_space">Emergency Space</string>
-    <string name="launcher_app_drawer">Apps</string>
-    <string name="launcher_settings">Settings</string>
-    <string name="launcher_switch_space">Switch Space</string>
-    <string name="launcher_search">Search apps…</string>
-    <string name="launcher_no_apps">No apps installed</string>
+    <string name="setup_user_b_title">Configure Profile B</string>
+    <string name="setup_user_b_desc">A secondary Android user will be created with a completely separate environment. Each user gets their own storage, apps, and credentials.</string>
 
-    <!-- Settings -->
-    <string name="settings_title">Settings</string>
-    <string name="settings_security">Security</string>
-    <string name="settings_change_primary_pin">Change Primary PIN</string>
-    <string name="settings_change_hidden_pin">Change Hidden PIN</string>
-    <string name="settings_change_emergency_pin">Change Emergency PIN</string>
-    <string name="settings_enable_fingerprint">Enable Fingerprint</string>
-    <string name="settings_stealth_mode">Stealth Mode</string>
-    <string name="settings_stealth_desc">Hide the app from the launcher</string>
-    <string name="settings_theme">Theme &amp; Appearance</string>
-    <string name="settings_wallpaper">Wallpaper</string>
-    <string name="settings_icon_style">Icon Style</string>
-    <string name="settings_app_drawer_style">App Drawer Style</string>
-    <string name="settings_app_management">App Management</string>
-    <string name="settings_install_app">Install App in this Space</string>
-    <string name="settings_backup_restore">Backup &amp; Restore</string>
-    <string name="settings_backup">Create Backup</string>
-    <string name="settings_restore">Restore from Backup</string>
-    <string name="settings_about">About</string>
-    <string name="settings_version">Version %1$s</string>
-    <string name="settings_device_admin">Device Admin</string>
-    <string name="settings_set_as_default">Set as Default Launcher</string>
+    <string name="setup_multi_user_not_supported">Your device doesn\'t support multi-user mode. The app will work in limited mode.</string>
 
-    <!-- App Manager -->
-    <string name="app_manager_title">App Manager</string>
-    <string name="app_manager_installed">Installed Apps</string>
-    <string name="app_manager_available">Available to Install</string>
-    <string name="app_manager_hide_app">Hide App</string>
-    <string name="app_manager_show_app">Show App</string>
-    <string name="app_manager_uninstall">Uninstall</string>
-    <string name="app_manager_add_to_space">Add to this Space</string>
-    <string name="app_manager_remove_from_space">Remove from this Space</string>
+    <string name="setup_security_title">Security Settings</string>
+    <string name="setup_security_desc">Configure advanced security options for maximum protection.</string>
 
-    <!-- Emergency -->
-    <string name="emergency_title">Emergency Mode</string>
-    <string name="emergency_desc">When someone forces you to unlock, use the Emergency PIN to show a fake environment.</string>
-    <string name="emergency_setup_pin">Setup Emergency PIN</string>
-    <string name="emergency_fake_apps">Fake Apps</string>
-    <string name="emergency_fake_apps_desc">Pre-install fake apps that look real</string>
+    <string name="setup_complete_title">Setup Complete</string>
+    <string name="setup_complete_desc">Review your configuration before activation.</string>
 
-    <!-- Security -->
-    <string name="security_title">Security Settings</string>
-    <string name="security_encryption">Data Encryption</string>
-    <string name="security_encryption_desc">All data encrypted with AES-256</string>
-    <string name="security_auto_lock">Auto-Lock</string>
-    <string name="security_auto_lock_desc">Lock after screen off</string>
-    <string name="security_lock_delay">Lock Delay</string>
-    <string name="security_intrusion_detection">Intrusion Detection</string>
-    <string name="security_intrusion_desc">Take photo on failed attempts</string>
-    <string name="security_max_attempts">Max Failed Attempts</string>
-    <string name="security_self_destruct">Self Destruct</string>
-    <string name="security_self_destruct_desc">Wipe hidden space data after max attempts</string>
+    <string name="setup_credential_info">Your credential is set through Android\'s system security settings. We never store your actual password or pattern.</string>
 
-    <!-- Backup -->
-    <string name="backup_title">Backup &amp; Restore</string>
-    <string name="backup_create">Create Backup</string>
-    <string name="backup_restore">Restore Backup</string>
-    <string name="backup_last">Last backup: %1$s</string>
-    <string name="backup_space">Backup Space: %1$s</string>
-    <string name="backup_progress">Creating backup…</string>
-    <string name="backup_success">Backup created successfully</string>
-    <string name="backup_failed">Backup failed</string>
-    <string name="backup_restore_progress">Restoring…</string>
-    <string name="backup_restore_success">Restore completed</string>
-    <string name="backup_restore_failed">Restore failed</string>
-    <string name="backup_encrypted">Backup is encrypted</string>
+    <string name="setup_stealth_info">When enabled, the app completely disappears from your phone. Access it anytime by dialing your secret code on the phone keypad.</string>
 
-    <!-- Theme -->
-    <string name="theme_title">Theme Settings</string>
-    <string name="theme_primary_color">Primary Color</string>
-    <string name="theme_accent_color">Accent Color</string>
-    <string name="theme_dark_mode">Dark Mode</string>
-    <string name="theme_icon_pack">Icon Pack</string>
-    <string name="theme_wallpaper">Wallpaper</string>
-    <string name="theme_font_size">Font Size</string>
-    <string name="theme_grid_size">Grid Size</string>
-    <string name="theme_animation">Animations</string>
+    <string name="setup_important_notice">IMPORTANT: Each user sets their own credential through Android Settings > Security. When the system lock screen appears, just enter the credential for the profile you want to access. The system automatically loads the correct profile.</string>
 
-    <!-- Switching -->
-    <string name="switch_title">Switch Space</string>
-    <string name="switch_to_primary">Switch to Primary Space</string>
-    <string name="switch_to_hidden">Switch to Hidden Space</string>
-    <string name="switch_confirm">You will need to enter the PIN for the new space</string>
-    <string name="switch_locking">Locking space…</string>
+    <string name="setup_success_title">System Activated!</string>
+    <string name="setup_success_message">Dual Persona System is now active.\n\nTo switch profiles:\n1. Lock your phone\n2. Unlock with the other profile\'s credential\n3. The system loads that profile automatically\n\nTo access settings: Dial *#*#7890#*#* on the phone keypad.</string>
 
-    <!-- Notifications -->
-    <string name="notification_channel_security">Security Alerts</string>
-    <string name="notification_channel_service">Services</string>
-    <string name="notification_failed_attempts">Failed unlock attempt detected</string>
-    <string name="notification_backup_complete">Backup completed</string>
+    <!-- ===== Button Labels ===== -->
+    <string name="get_started">Get Started</string>
+    <string name="grant_permissions">Grant Permissions</string>
+    <string name="set_and_continue">Set &amp; Continue</string>
+    <string name="create_user_b">Create User B</string>
+    <string name="activate_now">Activate Now</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
 
-    <!-- Errors -->
-    <string name="error_generic">Something went wrong</string>
-    <string name="error_pin_too_short">PIN must be at least 4 digits</string>
-    <string name="error_device_admin_required">Device admin permission required</string>
-    <string name="error_no_fingerprint">No fingerprint enrolled on this device</string>
-    <string name="error_storage">Storage permission required</string>
+    <!-- ===== General ===== -->
+    <string name="app_name">System Config</string>
+    <string name="profile_a">Profile A</string>
+    <string name="profile_b">Profile B</string>
+    <string name="secret_code_hint">Dial *#*#CODE#*#*</string>
 
-    <!-- Permissions -->
-    <string name="permission_rationale_overlay">Overlay permission needed to show lock screen</string>
-    <string name="permission_rationale_admin">Device admin access required for full functionality</string>
-    <string name="permission_rationale_storage">Storage access needed for file isolation</string>
-    <string name="permission_rationale_notification">Notification permission for security alerts</string>
-    <string name="permission_grant">Grant Permission</string>
+    <!-- ===== Dashboard ===== -->
+    <string name="dashboard_title">Dual Persona Control Panel</string>
+    <string name="dashboard_accessed_via">Accessed via secret code</string>
+    <string name="isolation_secure">Data Isolation: Secure</string>
+    <string name="isolation_warning">Data Isolation: Check Failed</string>
+    <string name="services_running">Services: Running</string>
+    <string name="services_stopped">Services: Stopped</string>
+    <string name="stealth_active">Stealth: Active</string>
+    <string name="stealth_off">Stealth: Off</string>
+    <string name="switch_to_profile_b">Switch to Profile B</string>
+    <string name="switch_to_profile_a">Switch to Profile A</string>
+    <string name="view_security_logs">View Security Logs</string>
+    <string name="change_secret_code">Change Secret Code</string>
+    <string name="toggle_stealth">Toggle Stealth Mode</string>
+    <string name="run_isolation_check">Run Isolation Check</string>
+    <string name="refresh_status">Refresh Status</string>
+    <string name="reset_system">Reset System</string>
+    <string name="reset_warning">WARNING: This will remove the secondary user and ALL their data. This action CANNOT be undone.</string>
 
-    <!-- Navigation -->
-    <string name="nav_home">Home</string>
-    <string name="nav_apps">Apps</string>
-    <string name="nav_settings">Settings</string>
-
-    <!-- Common -->
-    <string name="ok">OK</string>
-    <string name="cancel">Cancel</string>
-    <string name="confirm">Confirm</string>
-    <string name="delete">Delete</string>
-    <string name="save">Save</string>
-    <string name="loading">Loading…</string>
-    <string name="enabled">Enabled</string>
-    <string name="disabled">Disabled</string>
-    <string name="on">On</string>
-    <string name="off">Off</string>
+    <!-- ===== Notifications ===== -->
+    <string name="notification_system_title">Dual Persona System</string>
+    <string name="notification_system_text">System active — managing dual profiles</string>
+    <string name="notification_guard_title">Security Guard</string>
+    <string name="notification_guard_text">Monitoring data isolation</string>
+    <string name="notification_alert_title">Security Alert</string>
+    <string name="notification_alert_text">Suspicious activity detected</string>
 </resources>

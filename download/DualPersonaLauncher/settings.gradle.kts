@@ -11,9 +11,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven("https://jitpack.io")
     }
 }
 
-rootProject.name = "DualPersonaLauncher"
+rootProject.name = "DualPersonaSystem"
 include(":app")
