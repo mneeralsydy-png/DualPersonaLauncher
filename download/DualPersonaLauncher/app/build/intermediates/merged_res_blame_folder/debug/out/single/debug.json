@@ -1,0 +1,42 @@
+[
+    {
+        "merged": "com.dualpersona.system.app-merged_res-48:/layout_activity_dashboard.xml.flat",
+        "source": "com.dualpersona.system.app-main-50:/layout/activity_dashboard.xml"
+    },
+    {
+        "merged": "com.dualpersona.system.app-merged_res-48:/drawable_ic_shield.xml.flat",
+        "source": "com.dualpersona.system.app-main-50:/drawable/ic_shield.xml"
+    },
+    {
+        "merged": "com.dualpersona.system.app-merged_res-48:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.dualpersona.system.app-main-50:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.dualpersona.system.app-merged_res-48:/layout_activity_setup_wizard.xml.flat",
+        "source": "com.dualpersona.system.app-main-50:/layout/activity_setup_wizard.xml"
+    },
+    {
+        "merged": "com.dualpersona.system.app-merged_res-48:/drawable_ic_stealth.xml.flat",
+        "source": "com.dualpersona.system.app-main-50:/drawable/ic_stealth.xml"
+    },
+    {
+        "merged": "com.dualpersona.system.app-merged_res-48:/xml_device_admin.xml.flat",
+        "source": "com.dualpersona.system.app-main-50:/xml/device_admin.xml"
+    },
+    {
+        "merged": "com.dualpersona.system.app-merged_res-48:/drawable_ic_lock.xml.flat",
+        "source": "com.dualpersona.system.app-main-50:/drawable/ic_lock.xml"
+    },
+    {
+        "merged": "com.dualpersona.system.app-merged_res-48:/drawable_ic_fingerprint.xml.flat",
+        "source": "com.dualpersona.system.app-main-50:/drawable/ic_fingerprint.xml"
+    },
+    {
+        "merged": "com.dualpersona.system.app-merged_res-48:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.dualpersona.system.app-main-50:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.dualpersona.system.app-merged_res-48:/drawable_ic_users.xml.flat",
+        "source": "com.dualpersona.system.app-main-50:/drawable/ic_users.xml"
+    }
+]

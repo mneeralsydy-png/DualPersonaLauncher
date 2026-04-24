@@ -7,8 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.os.UserManager
 import com.dualpersona.system.DualPersonaApp
+import com.dualpersona.system.R
 import com.dualpersona.system.core.DataGuard
 import com.dualpersona.system.core.SystemUserManager
 import com.dualpersona.system.data.PreferencesManager
@@ -81,18 +81,18 @@ class SystemService : Service() {
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder(this, channelId)
-                .setContentTitle("Dual Persona System")
-                .setContentText("System active - managing dual profiles")
+                .setContentTitle(getString(R.string.notification_system_title))
+                .setContentText(getString(R.string.notification_system_text))
                 .setSmallIcon(android.R.drawable.ic_lock_lock)
                 .setOngoing(true)
-                .setSilent(true)
+                .setOnlyAlertOnce(true)
                 .setContentIntent(pendingIntent)
                 .build()
         } else {
             @Suppress("DEPRECATION")
             Notification.Builder(this)
-                .setContentTitle("Dual Persona System")
-                .setContentText("System active")
+                .setContentTitle(getString(R.string.notification_system_title))
+                .setContentText(getString(R.string.notification_system_text))
                 .setSmallIcon(android.R.drawable.ic_lock_lock)
                 .setOngoing(true)
                 .setContentIntent(pendingIntent)

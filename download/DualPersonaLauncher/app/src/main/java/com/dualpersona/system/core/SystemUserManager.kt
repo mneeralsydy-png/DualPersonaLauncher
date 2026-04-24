@@ -1,10 +1,10 @@
 package com.dualpersona.system.core
 
 import android.annotation.SuppressLint
-import android.app.admin.DevicePolicyManager
 import android.content.Context
-import android.content.pm.UserInfo
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.UserHandle
 import android.os.UserManager
 import com.dualpersona.system.data.PreferencesManager
@@ -13,255 +13,190 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.lang.reflect.Method
 
-/**
- * SystemUserManager - Manages Android OS multi-user functionality
- *
- * This class interacts directly with Android's UserManager to:
- * - Create and manage a secondary user profile
- * - Switch between User A and User B
- * - Monitor user state changes
- * - Configure user restrictions and policies
- *
- * Requires: MANAGE_USERS permission (system app or Device Owner)
- */
 class SystemUserManager(private val context: Context) {
 
     private val userManager: UserManager =
         context.getSystemService(Context.USER_SERVICE) as UserManager
 
-    private val devicePolicyManager: DevicePolicyManager =
-        context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-
     private val prefs: PreferencesManager = PreferencesManager(context)
 
-    // ===== User Management =====
+    // ===== User Management (using reflection for hidden APIs) =====
 
-    /**
-     * Create a secondary user (User B / Space B)
-     * This creates a completely separate Android user with:
-     * - Independent app installations
-     * - Separate storage partition
-     * - Own lock screen credential
-     * - Isolated contacts, messages, photos
-     */
-    @SuppressLint("NewApi")
     fun createSecondaryUser(userName: String): Result<UserHandle> = runCatching {
-        val userHandle = userManager.createUser(userName, 0)
-        if (userHandle == null) {
-            SecurityLog.log(context, "FAILED", "create_user", "User creation returned null")
-            throw IllegalStateException("Failed to create secondary user")
-        }
+        val method: Method = UserManager::class.java.getMethod("createUser", String::class.java, Int::class.javaPrimitiveType)
+        val userHandle = method.invoke(userManager, userName, 0) as? UserHandle
+            ?: throw IllegalStateException("Failed to create secondary user")
 
-        prefs.setSecondaryUserHandle(userHandle)
+        val serial = getSerialNumberForUser(userHandle)
+        prefs.setSecondaryUserHandleId(serial)
         prefs.setSecondaryUserName(userName)
 
         SecurityLog.log(context, "SUCCESS", "create_user", "Secondary user created: $userName")
         userHandle
     }
 
-    /**
-     * Remove secondary user and all associated data
-     */
-    @SuppressLint("NewApi")
     fun removeSecondaryUser(): Result<Unit> = runCatching {
-        val handle = prefs.getSecondaryUserHandle() ?: return Result.success(Unit)
-        val serialNumber = userManager.getSerialNumberForUser(handle)
+        val handle = getSecondaryUserHandle() ?: return Result.success(Unit)
 
-        if (userManager.removeUser(handle)) {
+        val method: Method = UserManager::class.java.getMethod("removeUser", UserHandle::class.java)
+        val result = method.invoke(userManager, handle) as? Boolean
+            ?: throw IllegalStateException("Failed to remove secondary user")
+
+        if (result) {
             prefs.clearSecondaryUser()
             SecurityLog.log(context, "SUCCESS", "remove_user", "Secondary user removed")
-        } else {
-            throw IllegalStateException("Failed to remove secondary user")
         }
     }
 
-    /**
-     * Switch to a specific user profile
-     * This is the core mechanism: switching User A ↔ User B
-     */
     @SuppressLint("NewApi")
     fun switchUser(userHandle: UserHandle): Result<Unit> = runCatching {
-        // Use reflection for switchUser as it's a @SystemApi
-        val method: Method = try {
-            UserManager::class.java.getMethod(
-                "switchUser",
-                UserHandle::class.java
-            )
-        } catch (e: NoSuchMethodException) {
-            // Fallback: try with int userId
-            val userIdMethod = UserManager::class.java.getMethod(
-                "switchUser",
-                Int::class.javaPrimitiveType
-            )
-            userIdMethod.invoke(userManager, getAndroidId(userHandle))
-            SecurityLog.log(context, "SUCCESS", "switch_user", "Switched to user id: ${getAndroidId(userHandle)}")
-            return@runCatching
+        val userId = getUserId(userHandle)
+        val method: Method = UserManager::class.java.getMethod("switchUser", Int::class.javaPrimitiveType)
+        method.invoke(userManager, userId)
+        SecurityLog.log(context, "SUCCESS", "switch_user", "Switched to user id: $userId")
+    }
+
+    fun getAllUsers(): List<Map<String, Any?>> {
+        return try {
+            val method: Method = UserManager::class.java.getMethod("getUsers")
+            val users = method.invoke(userManager) as? List<*> ?: emptyList<Any>()
+            users.mapNotNull { userInfo ->
+                val cls = userInfo!!.javaClass
+                val name = cls.getMethod("getName")?.invoke(userInfo) as? String ?: ""
+                val id = cls.getMethod("getId")?.invoke(userInfo) as? Int ?: -1
+                val isGuest = cls.getMethod("isGuest")?.invoke(userInfo) as? Boolean ?: false
+                mapOf("name" to name, "id" to id, "isGuest" to isGuest)
+            }
+        } catch (e: Exception) {
+            emptyList()
         }
-
-        method.invoke(userManager, userHandle)
-        SecurityLog.log(context, "SUCCESS", "switch_user", "User switched")
     }
 
-    /**
-     * Get list of all users on the device
-     */
-    fun getAllUsers(): List<UserInfo> {
-        return userManager.users
+    fun getCurrentUserSerial(): Long {
+        return try {
+            val method: Method = UserManager::class.java.getMethod("getCurrentUserSerialNumber")
+            method.invoke(userManager) as? Long ?: -1
+        } catch (e: Exception) { -1 }
     }
 
-    /**
-     * Get current active user info
-     */
-    fun getCurrentUser(): UserInfo {
-        return userManager.userInfoForSerialNumber(
-            userManager.currentUserSerialNumber
-        ) ?: throw IllegalStateException("Cannot get current user")
+    fun getCurrentUserId(): Int {
+        return try {
+            val method: Method = UserManager::class.java.getMethod("getCurrentUserId")
+            method.invoke(userManager) as? Int ?: 0
+        } catch (e: Exception) { 0 }
     }
 
-    /**
-     * Get secondary user info if exists
-     */
-    fun getSecondaryUserInfo(): UserInfo? {
-        val handle = prefs.getSecondaryUserHandle() ?: return null
-        val serialNumber = userManager.getSerialNumberForUser(handle)
-        return userManager.userInfoForSerialNumber(serialNumber)
+    fun getSecondaryUserInfo(): Map<String, Any?>? {
+        val serial = prefs.getSecondaryUserHandleId()
+        if (serial == -1L) return null
+
+        return try {
+            val allUsers = getAllUsers()
+            allUsers.firstOrNull { it["id"] == getUserIdFromSerial(serial) }
+        } catch (e: Exception) { null }
     }
 
-    /**
-     * Check if a secondary user exists
-     */
     fun hasSecondaryUser(): Boolean {
         return getSecondaryUserInfo() != null
     }
 
-    /**
-     * Get UserHandle from user ID
-     */
-    @SuppressLint("NewApi")
-    fun getUserHandle(userId: Int): UserHandle {
-        return UserHandle.of(userId)
-    }
-
-    /**
-     * Get user ID from UserHandle
-     */
-    private fun getAndroidId(handle: UserHandle): Int {
-        return try {
-            val method = UserHandle::class.java.getDeclaredMethod("getIdentifier")
-            method.invoke(handle) as Int
-        } catch (e: Exception) {
-            -1
-        }
-    }
-
     // ===== User Restrictions =====
 
-    /**
-     * Apply restrictions to secondary user to maintain isolation
-     */
-    @SuppressLint("NewApi")
     fun applyUserRestrictions(userHandle: UserHandle) = runCatching {
-        val restrictions = arrayOf(
-            UserManager.DISALLOW_INSTALL_APPS,
-            UserManager.DISALLOW_UNINSTALL_APPS,
-            UserManager.DISALLOW_SHARE_LOCATION,
-            UserManager.DISALLOW_USB_FILE_TRANSFER,
-        )
-
-        // These restrictions are configurable - user can adjust in dashboard
-        val currentRestrictions = prefs.getUserRestrictions()
-        for (restriction in currentRestrictions) {
-            userManager.setUserRestriction(userHandle, restriction, true)
+        val restrictions = prefs.getUserRestrictions()
+        for (restriction in restrictions) {
+            try {
+                userManager.setUserRestriction(restriction, true)
+            } catch (e: Exception) { }
         }
     }
 
-    /**
-     * Remove all restrictions from secondary user
-     */
-    @SuppressLint("NewApi")
     fun removeUserRestrictions(userHandle: UserHandle) = runCatching {
         val restrictionKeys = listOf(
             UserManager.DISALLOW_INSTALL_APPS,
             UserManager.DISALLOW_UNINSTALL_APPS,
             UserManager.DISALLOW_SHARE_LOCATION,
             UserManager.DISALLOW_USB_FILE_TRANSFER,
-            UserManager.DISALLOW_DEBUGGING_FEATURES,
-            UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES,
-            UserManager.DISALLOW_FACTORY_RESET,
-            UserManager.DISALLOW_MODIFY_ACCOUNTS,
         )
         for (key in restrictionKeys) {
-            userManager.setUserRestriction(userHandle, key, false)
+            try {
+                userManager.setUserRestriction(key, false)
+            } catch (e: Exception) { }
         }
     }
 
-    // ===== User State =====
+    // ===== Multi-User Support Check =====
 
-    /**
-     * Check if the device supports multi-user
-     */
     fun isMultiUserSupported(): Boolean {
         return try {
-            UserManager::class.java.getMethod("supportsMultipleUsers")
-                .invoke(userManager) as? Boolean ?: false
+            val method: Method = UserManager::class.java.getMethod("supportsMultipleUsers")
+            method.invoke(userManager) as? Boolean ?: (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
         } catch (e: Exception) {
-            // Fallback: check max users
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+        }
+    }
+
+    // ===== Reflection Helpers =====
+
+    private fun getSerialNumberForUser(handle: UserHandle): Long {
+        return try {
+            val method: Method = UserManager::class.java.getMethod("getSerialNumberForUser", UserHandle::class.java)
+            method.invoke(userManager, handle) as? Long ?: -1
+        } catch (e: Exception) { -1 }
+    }
+
+    private fun getUserId(handle: UserHandle): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             try {
-                val method = UserManager::class.java.getMethod("getMaxSupportedUsers")
-                (method.invoke(userManager) as? Int ?: 1) > 1
-            } catch (e2: Exception) {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-            }
+                val method: Method = UserHandle::class.java.getMethod("getIdentifier")
+                method.invoke(handle) as? Int ?: -1
+            } catch (e: Exception) { -1 }
+        } else {
+            @Suppress("DEPRECATION")
+            handle.hashCode()
         }
     }
 
-    /**
-     * Check if current process is running in secondary user space
-     */
-    @SuppressLint("NewApi")
-    fun isSecondaryUser(): Boolean {
-        val currentSerial = userManager.currentUserSerialNumber
-        val secondaryHandle = prefs.getSecondaryUserHandle() ?: return false
-        val secondarySerial = userManager.getSerialNumberForUser(secondaryHandle)
-        return currentSerial == secondarySerial
+    private fun getUserIdFromSerial(serial: Long): Int {
+        return try {
+            val method: Method = UserManager::class.java.getMethod("getUserForSerialNumber", Long::class.javaPrimitiveType)
+            val handle = method.invoke(userManager, serial) as? UserHandle ?: return -1
+            getUserId(handle)
+        } catch (e: Exception) { -1 }
     }
 
-    /**
-     * Get the number of users on device
-     */
     fun getUserCount(): Int {
-        return userManager.users.size
+        return getAllUsers().size
     }
 
-    // ===== Guest/Emergency User =====
-
-    /**
-     * Enable guest mode (quick temporary space)
-     */
-    @SuppressLint("NewApi")
-    fun enableGuestSession(): Result<UserHandle> = runCatching {
-        // Try to enable system guest
-        val method = try {
-            UserManager::class.java.getMethod("enableGuest")
-        } catch (e: NoSuchMethodException) {
-            null
-        }
-
-        method?.invoke(userManager)
-
-        // Find guest user
-        userManager.users.find { it.isGuest }
-            ?.let { getUserHandle(it.id) }
-            ?: throw IllegalStateException("Guest user not available")
+    fun getSecondaryUserHandle(): UserHandle? {
+        val serial = prefs.getSecondaryUserHandleId()
+        if (serial == -1L) return null
+        return try {
+            val method: Method = UserManager::class.java.getMethod("getUserForSerialNumber", Long::class.javaPrimitiveType)
+            method.invoke(userManager, serial) as? UserHandle
+        } catch (e: Exception) { null }
     }
+
+    // ===== Async helpers =====
 
     suspend fun switchToSecondaryUserAsync() = withContext(Dispatchers.IO) {
-        val handle = prefs.getSecondaryUserHandle()
+        val handle = getSecondaryUserHandle()
             ?: throw IllegalStateException("No secondary user configured")
         switchUser(handle).getOrThrow()
     }
 
     suspend fun switchToMainUserAsync() = withContext(Dispatchers.IO) {
-        switchUser(getUserHandle(0)).getOrThrow()
+        switchUser(getUserHandleForId(0)).getOrThrow()
+    }
+
+    private fun getUserHandleForId(userId: Int): UserHandle {
+        return try {
+            val method: Method = UserHandle::class.java.getMethod("of", Int::class.javaPrimitiveType)
+            method.invoke(null, userId) as UserHandle
+        } catch (e: Exception) {
+            val constructor = UserHandle::class.java.getConstructor(Int::class.javaPrimitiveType)
+            constructor.newInstance(userId)
+        }
     }
 }

@@ -19,21 +19,8 @@ import com.dualpersona.system.core.*
 import com.dualpersona.system.data.PreferencesManager
 import com.dualpersona.system.data.SecurityLog
 import com.dualpersona.system.receiver.DualPersonaAdmin
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-/**
- * SetupWizardActivity - Multi-step setup wizard
- *
- * Guides the user through:
- * Step 1: Welcome & Overview
- * Step 2: Permissions (Device Admin, Accessibility)
- * Step 3: User A Configuration (name, credential type)
- * Step 4: User B Configuration (create secondary user, credential type)
- * Step 5: Security Settings (secret code, stealth mode)
- * Step 6: Confirmation & Finalize
- */
 class SetupWizardActivity : AppCompatActivity() {
 
     private lateinit var prefs: PreferencesManager
@@ -44,7 +31,6 @@ class SetupWizardActivity : AppCompatActivity() {
     private var currentStep = 0
     private val totalSteps = 6
 
-    // ===== Device Admin Request =====
     private val deviceAdminLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -52,15 +38,13 @@ class SetupWizardActivity : AppCompatActivity() {
             SecurityLog.log(this, "SUCCESS", "device_admin", "Device admin granted")
             updateStep()
         } else {
-            Toast.makeText(this, "Device Admin is required for system integration", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.dialog_admin_required), Toast.LENGTH_LONG).show()
         }
     }
 
-    // ===== Set Lock Screen Credential =====
     private val setCredentialLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        // User returned from system settings
         updateStep()
     }
 
@@ -74,21 +58,16 @@ class SetupWizardActivity : AppCompatActivity() {
         currentStep = prefs.getCurrentSetupStep()
 
         if (prefs.isSetupComplete()) {
-            // Setup already complete - check stealth mode
             if (prefs.isStealthModeEnabled()) {
-                // App is in stealth mode - show nothing, finish
                 finish()
                 return
             }
-            // Show a brief confirmation
             showSetupCompleteDialog()
             return
         }
 
         showStep(currentStep)
     }
-
-    // ===== Step Rendering =====
 
     private fun showStep(step: Int) {
         currentStep = step
@@ -120,7 +99,7 @@ class SetupWizardActivity : AppCompatActivity() {
         val btnBack = findViewById<android.widget.Button>(R.id.btn_back)
         val progressBar = findViewById<android.widget.ProgressBar>(R.id.progress_bar)
 
-        tvTitle.text = "Dual Persona System"
+        tvTitle.text = getString(R.string.app_name)
         tvDesc.text = getString(R.string.setup_welcome_desc)
         tvStep.text = "1/$totalSteps"
         progressBar.progress = (1 * 100) / totalSteps
@@ -146,14 +125,13 @@ class SetupWizardActivity : AppCompatActivity() {
         tvStep.text = "2/$totalSteps"
         progressBar.progress = (2 * 100) / totalSteps
 
-        // Build permission checklist
         containerExtra.removeAllViews()
         val permChecks = mutableListOf<android.widget.CheckBox>()
 
         val permissions = listOf(
-            "Device Administrator" to "Required for system-level user management",
-            "Notification Access" to "For security alerts and service management",
-            "Accessibility Service" to "For enhanced data monitoring (optional)"
+            getString(R.string.perm_device_admin) to getString(R.string.perm_device_admin_desc),
+            getString(R.string.perm_notifications) to getString(R.string.perm_notifications_desc),
+            getString(R.string.perm_accessibility) to getString(R.string.perm_accessibility_desc)
         )
 
         for ((name, desc) in permissions) {
@@ -175,7 +153,6 @@ class SetupWizardActivity : AppCompatActivity() {
             containerExtra.addView(tv)
         }
 
-        // Check current states
         val dpm = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         val adminComponent = ComponentName(this, DualPersonaAdmin::class.java)
         permChecks[0].isChecked = dpm.isAdminActive(adminComponent)
@@ -185,31 +162,23 @@ class SetupWizardActivity : AppCompatActivity() {
         btnBack.visibility = View.VISIBLE
         btnBack.setOnClickListener { showStep(0) }
 
-        btnNext.text = getString(R.string.grant_permissions)
-        btnNext.setOnClickListener {
-            if (!dpm.isAdminActive(adminComponent)) {
-                // Request Device Admin
-                val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
-                    putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponent)
-                    putExtra(
-                        DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                        "Dual Persona System needs Device Admin to manage user profiles and system-level features."
-                    )
-                }
-                deviceAdminLauncher.launch(intent)
-            } else {
-                showStep(2)
-            }
-        }
-
-        // Auto-advance if all permissions granted
         if (dpm.isAdminActive(adminComponent)) {
             btnNext.text = getString(R.string.next)
             btnNext.setOnClickListener { showStep(2) }
+        } else {
+            btnNext.text = getString(R.string.grant_permissions)
+            btnNext.setOnClickListener {
+                val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+                    putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponent)
+                    putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                        getString(R.string.dialog_admin_required))
+                }
+                deviceAdminLauncher.launch(intent)
+            }
         }
     }
 
-    // ===== STEP 2: User A Configuration =====
+    // ===== STEP 2: User A =====
     private fun showUserAConfigStep() {
         setContentView(R.layout.activity_setup_wizard)
 
@@ -228,18 +197,22 @@ class SetupWizardActivity : AppCompatActivity() {
 
         containerExtra.removeAllViews()
 
-        // Profile name input
-        containerExtra.addView(createLabel("Profile Name (User A):"))
+        containerExtra.addView(createLabel(getString(R.string.label_profile_name_a)))
         val etName = android.widget.EditText(this).apply {
-            hint = "e.g., Personal"
+            hint = getString(R.string.hint_profile_a)
             setText(prefs.getProfileName(0))
             setPadding(0, 16, 0, 32)
         }
         containerExtra.addView(etName)
 
-        // Credential type selector
-        containerExtra.addView(createLabel("Lock Screen Credential:"))
-        val credTypes = arrayOf("PIN", "Pattern", "Password", "Fingerprint + PIN", "Fingerprint + Pattern")
+        containerExtra.addView(createLabel(getString(R.string.label_credential_type)))
+        val credTypes = arrayOf(
+            getString(R.string.cred_pin),
+            getString(R.string.cred_pattern),
+            getString(R.string.cred_password),
+            getString(R.string.cred_fingerprint_pin),
+            getString(R.string.cred_fingerprint_pattern)
+        )
         val spinner = android.widget.Spinner(this).apply {
             adapter = ArrayAdapter(this@SetupWizardActivity,
                 android.R.layout.simple_spinner_item, credTypes)
@@ -247,7 +220,6 @@ class SetupWizardActivity : AppCompatActivity() {
         }
         containerExtra.addView(spinner)
 
-        // Info text
         val tvInfo = android.widget.TextView(this).apply {
             text = getString(R.string.setup_credential_info)
             textSize = 13f
@@ -261,7 +233,7 @@ class SetupWizardActivity : AppCompatActivity() {
 
         btnNext.text = getString(R.string.set_and_continue)
         btnNext.setOnClickListener {
-            val name = etName.text.toString().ifBlank { "User A" }
+            val name = etName.text.toString().ifBlank { getString(R.string.profile_a) }
             prefs.setProfileName(0, name)
 
             val credType = when (spinner.selectedItemPosition) {
@@ -274,15 +246,12 @@ class SetupWizardActivity : AppCompatActivity() {
             }
             credentialManager.storeCredentialMeta(0, credType, name)
 
-            // Open system security settings to set lock screen credential
             openSecuritySettings()
-
-            // Continue after return
             showStep(3)
         }
     }
 
-    // ===== STEP 3: User B Configuration =====
+    // ===== STEP 3: User B =====
     private fun showUserBConfigStep() {
         setContentView(R.layout.activity_setup_wizard)
 
@@ -298,7 +267,6 @@ class SetupWizardActivity : AppCompatActivity() {
         tvStep.text = "4/$totalSteps"
         progressBar.progress = (4 * 100) / totalSteps
 
-        // Check multi-user support
         if (!userManager.isMultiUserSupported()) {
             tvDesc.text = getString(R.string.setup_multi_user_not_supported)
             btnNext.text = getString(R.string.skip)
@@ -310,18 +278,22 @@ class SetupWizardActivity : AppCompatActivity() {
         tvDesc.text = getString(R.string.setup_user_b_desc)
         containerExtra.removeAllViews()
 
-        // Profile name input
-        containerExtra.addView(createLabel("Profile Name (User B):"))
+        containerExtra.addView(createLabel(getString(R.string.label_profile_name_b)))
         val etName = android.widget.EditText(this).apply {
-            hint = "e.g., Work"
+            hint = getString(R.string.hint_profile_b)
             setText(prefs.getProfileName(1))
             setPadding(0, 16, 0, 32)
         }
         containerExtra.addView(etName)
 
-        // Credential type selector
-        containerExtra.addView(createLabel("Lock Screen Credential:"))
-        val credTypes = arrayOf("PIN", "Pattern", "Password", "Fingerprint + PIN", "Fingerprint + Pattern")
+        containerExtra.addView(createLabel(getString(R.string.label_credential_type)))
+        val credTypes = arrayOf(
+            getString(R.string.cred_pin),
+            getString(R.string.cred_pattern),
+            getString(R.string.cred_password),
+            getString(R.string.cred_fingerprint_pin),
+            getString(R.string.cred_fingerprint_pattern)
+        )
         val spinner = android.widget.Spinner(this).apply {
             adapter = ArrayAdapter(this@SetupWizardActivity,
                 android.R.layout.simple_spinner_item, credTypes)
@@ -334,7 +306,7 @@ class SetupWizardActivity : AppCompatActivity() {
 
         btnNext.text = getString(R.string.create_user_b)
         btnNext.setOnClickListener {
-            val name = etName.text.toString().ifBlank { "User B" }
+            val name = etName.text.toString().ifBlank { getString(R.string.profile_b) }
             prefs.setProfileName(1, name)
 
             val credType = when (spinner.selectedItemPosition) {
@@ -347,18 +319,16 @@ class SetupWizardActivity : AppCompatActivity() {
             }
             credentialManager.storeCredentialMeta(1, credType, name)
 
-            // Create secondary user
             lifecycleScope.launch {
-                showProgress("Creating User B...")
+                showProgress(getString(R.string.dialog_creating_user_b))
                 val result = userManager.createSecondaryUser(name)
                 result.onFailure {
                     Toast.makeText(this@SetupWizardActivity,
-                        "Failed to create user: ${it.message}", Toast.LENGTH_LONG).show()
+                        getString(R.string.dialog_create_user_failed, it.message), Toast.LENGTH_LONG).show()
                     return@launch
                 }
 
-                // Apply initial restrictions
-                val handle = prefs.getSecondaryUserHandle()
+                val handle = userManager.getSecondaryUserHandle()
                 if (handle != null) {
                     userManager.applyUserRestrictions(handle)
                 }
@@ -372,7 +342,7 @@ class SetupWizardActivity : AppCompatActivity() {
         }
     }
 
-    // ===== STEP 4: Security Settings =====
+    // ===== STEP 4: Security =====
     private fun showSecurityStep() {
         setContentView(R.layout.activity_setup_wizard)
 
@@ -391,10 +361,9 @@ class SetupWizardActivity : AppCompatActivity() {
 
         containerExtra.removeAllViews()
 
-        // Secret code input
-        containerExtra.addView(createLabel("Secret Access Code (dial *#*#CODE#*#*):"))
+        containerExtra.addView(createLabel(getString(R.string.label_secret_code)))
         val etSecret = android.widget.EditText(this).apply {
-            hint = "4-digit code"
+            hint = getString(R.string.hint_secret_code)
             inputType = android.text.InputType.TYPE_CLASS_NUMBER or
                     android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD
             setText(stealthManager.getSecretCode())
@@ -403,11 +372,10 @@ class SetupWizardActivity : AppCompatActivity() {
         }
         containerExtra.addView(etSecret)
 
-        // Enable stealth mode toggle
         val cbStealth = android.widget.CheckBox(this).apply {
-            text = "Enable Stealth Mode (hide app after setup)"
+            text = getString(R.string.label_stealth_mode)
             textSize = 16f
-            isChecked = true // Recommended
+            isChecked = true
             setPadding(0, 16, 0, 8)
         }
         containerExtra.addView(cbStealth)
@@ -420,8 +388,7 @@ class SetupWizardActivity : AppCompatActivity() {
         }
         containerExtra.addView(tvStealthInfo)
 
-        // Max failed attempts
-        containerExtra.addView(createLabel("Max Failed Attempts Before Lockout:"))
+        containerExtra.addView(createLabel(getString(R.string.label_max_attempts)))
         val etMaxAttempts = android.widget.EditText(this).apply {
             inputType = android.text.InputType.TYPE_CLASS_NUMBER
             setText("5")
@@ -462,18 +429,16 @@ class SetupWizardActivity : AppCompatActivity() {
 
         containerExtra.removeAllViews()
 
-        // Summary
         val summaryLines = mutableListOf<String>()
-
-        summaryLines.add("Profile A: ${prefs.getProfileName(0)}")
-        summaryLines.add("  Credential: ${prefs.getCredentialType(0)}")
+        summaryLines.add(getString(R.string.summary_profile_a, prefs.getProfileName(0)))
+        summaryLines.add("  ${getString(R.string.summary_credential, prefs.getCredentialType(0))}")
         summaryLines.add("")
-        summaryLines.add("Profile B: ${prefs.getProfileName(1)}")
-        summaryLines.add("  Credential: ${prefs.getCredentialType(1)}")
-        summaryLines.add("  Status: ${if (userManager.hasSecondaryUser()) "Created" else "Not Created"}")
+        summaryLines.add(getString(R.string.summary_profile_b, prefs.getProfileName(1)))
+        summaryLines.add("  ${getString(R.string.summary_credential, prefs.getCredentialType(1))}")
+        summaryLines.add("  ${if (userManager.hasSecondaryUser()) getString(R.string.summary_status_created) else getString(R.string.summary_status_not_created)}")
         summaryLines.add("")
-        summaryLines.add("Secret Code: *#*#${stealthManager.getSecretCode()}#*#*")
-        summaryLines.add("Stealth Mode: ${if (prefs.isStealthModeEnabled()) "Enabled" else "Disabled"}")
+        summaryLines.add(getString(R.string.summary_secret_code, stealthManager.getSecretCode()))
+        summaryLines.add(if (prefs.isStealthModeEnabled()) getString(R.string.summary_stealth_enabled) else getString(R.string.summary_stealth_disabled))
 
         for (line in summaryLines) {
             val tv = android.widget.TextView(this).apply {
@@ -487,7 +452,6 @@ class SetupWizardActivity : AppCompatActivity() {
             containerExtra.addView(tv)
         }
 
-        // Important notice
         val tvNotice = android.widget.TextView(this).apply {
             text = getString(R.string.setup_important_notice)
             textSize = 13f
@@ -500,67 +464,49 @@ class SetupWizardActivity : AppCompatActivity() {
         btnBack.setOnClickListener { showStep(4) }
 
         btnNext.text = getString(R.string.activate_now)
-        btnNext.setOnClickListener {
-            activateSystem()
-        }
+        btnNext.setOnClickListener { activateSystem() }
     }
-
-    // ===== Activation =====
 
     private fun activateSystem() {
         lifecycleScope.launch {
-            showProgress("Activating Dual Persona System...")
+            showProgress(getString(R.string.dialog_activating))
 
-            // 1. Mark setup complete
             prefs.setSetupComplete(true)
-
-            // 2. Start services
             startServices()
 
-            // 3. Enable stealth mode if configured
             if (prefs.isStealthModeEnabled()) {
                 stealthManager.enableStealthMode()
             }
 
-            // 4. Log activation
             SecurityLog.log(this@SetupWizardActivity, "SUCCESS", "system_activate",
                 "Dual Persona System activated successfully")
 
             hideProgress()
 
-            // 5. Show success dialog
             AlertDialog.Builder(this@SetupWizardActivity)
                 .setTitle(getString(R.string.setup_success_title))
                 .setMessage(getString(R.string.setup_success_message))
-                .setPositiveButton("OK") { _, _ ->
-                    finish()
-                }
+                .setPositiveButton(getString(R.string.dialog_ok)) { _, _ -> finish() }
                 .setCancelable(false)
                 .show()
         }
     }
 
     private fun startServices() {
-        // Start System Service
-        val systemIntent = android.content.Intent(this,
-            com.dualpersona.system.service.SystemService::class.java)
+        val systemIntent = Intent(this, com.dualpersona.system.service.SystemService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(systemIntent)
         } else {
             startService(systemIntent)
         }
 
-        // Start Guard Service
-        val guardIntent = android.content.Intent(this,
-            com.dualpersona.system.service.GuardService::class.java)
+        val guardIntent = Intent(this, com.dualpersona.system.service.GuardService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(guardIntent)
         } else {
             startService(guardIntent)
         }
     }
-
-    // ===== Helpers =====
 
     private fun openSecuritySettings() {
         val intent = Intent(Settings.ACTION_SECURITY_SETTINGS).apply {
@@ -596,17 +542,14 @@ class SetupWizardActivity : AppCompatActivity() {
 
     private fun showSetupCompleteDialog() {
         AlertDialog.Builder(this)
-            .setTitle("System Active")
-            .setMessage("Dual Persona System is already configured.\n\n" +
-                    "Secret Code: *#*#${stealthManager.getSecretCode()}#*#*")
-            .setPositiveButton("Reconfigure") { _, _ ->
+            .setTitle(getString(R.string.dialog_system_active))
+            .setMessage(getString(R.string.dialog_system_active_msg, stealthManager.getSecretCode()))
+            .setPositiveButton(getString(R.string.dialog_reconfigure)) { _, _ ->
                 prefs.setSetupComplete(false)
                 prefs.setCurrentSetupStep(0)
                 showStep(0)
             }
-            .setNegativeButton("Close") { _, _ ->
-                finish()
-            }
+            .setNegativeButton(getString(R.string.dialog_close)) { _, _ -> finish() }
             .show()
     }
 

@@ -75,7 +75,7 @@ class GuardService : Service() {
                 .setContentText("Monitoring data isolation")
                 .setSmallIcon(android.R.drawable.ic_lock_lock)
                 .setOngoing(true)
-                .setSilent(true)
+                .setOnlyAlertOnce(true)
                 .setPriority(Notification.PRIORITY_MIN)
                 .build()
         } else {

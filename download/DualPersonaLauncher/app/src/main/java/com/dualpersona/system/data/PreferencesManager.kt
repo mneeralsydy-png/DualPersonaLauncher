@@ -101,22 +101,11 @@ class PreferencesManager(context: Context) {
 
     // ===== Secondary User =====
 
-    fun getSecondaryUserHandle(): android.os.UserHandle? {
-        val serial = prefs.getLong(KEY_SECONDARY_USER_HANDLE, -1)
-        if (serial == -1L) return null
-        return try {
-            android.os.UserManager.getUserHandle(serial)
-        } catch (e: Exception) {
-            null
-        }
+    fun getSecondaryUserHandleId(): Long {
+        return prefs.getLong(KEY_SECONDARY_USER_HANDLE, -1)
     }
 
-    fun setSecondaryUserHandle(handle: android.os.UserHandle) {
-        val serial = try {
-            android.os.UserManager.getInstance(null).getSerialNumberForUser(handle)
-        } catch (e: Exception) {
-            -1L
-        }
+    fun setSecondaryUserHandleId(serial: Long) {
         prefs.edit().putLong(KEY_SECONDARY_USER_HANDLE, serial).apply()
     }
 
