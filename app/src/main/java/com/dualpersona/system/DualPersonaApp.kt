@@ -4,12 +4,15 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
+import android.os.LocaleList
 import com.dualpersona.system.core.StealthManager
 import com.dualpersona.system.data.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import java.util.Locale
 
 class DualPersonaApp : Application() {
 
@@ -36,15 +39,34 @@ class DualPersonaApp : Application() {
 
         createNotificationChannels()
 
-        // Auto-start services if setup is complete and not in stealth
         if (prefs.isSetupComplete() && !prefs.isStealthModeEnabled()) {
             StealthManager.restoreAppIcon(this)
         }
     }
 
     override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(base)
-        // Pre-init for direct boot support
+        // Force Arabic locale for the entire app
+        val arabicLocale = Locale("ar")
+        val config = Configuration(base.resources.configuration)
+        config.setLocale(arabicLocale)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            config.setLocales(LocaleList(arabicLocale))
+        }
+        val context = base.createConfigurationContext(config)
+        super.attachBaseContext(context)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // Re-force Arabic on configuration changes
+        val arabicLocale = Locale("ar")
+        val config = Configuration(newConfig)
+        config.setLocale(arabicLocale)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            config.setLocales(LocaleList(arabicLocale))
+        }
+        @Suppress("DEPRECATION")
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 
     private fun createNotificationChannels() {
@@ -52,26 +74,26 @@ class DualPersonaApp : Application() {
             val channels = listOf(
                 NotificationChannel(
                     CHANNEL_SYSTEM,
-                    "System Service",
+                    "خدمة النظام",
                     NotificationManager.IMPORTANCE_LOW
                 ).apply {
-                    description = "Manages dual persona environments"
+                    description = "إدارة بيئات الهوية المزدوجة"
                     setShowBadge(false)
                 },
                 NotificationChannel(
                     CHANNEL_GUARD,
-                    "Security Guard",
+                    "الحماية الأمنية",
                     NotificationManager.IMPORTANCE_MIN
                 ).apply {
-                    description = "Monitors data isolation and security"
+                    description = "مراقبة عزل البيانات والأمان"
                     setShowBadge(false)
                 },
                 NotificationChannel(
                     CHANNEL_ALERT,
-                    "Security Alerts",
+                    "تنبيهات أمنية",
                     NotificationManager.IMPORTANCE_HIGH
                 ).apply {
-                    description = "Important security notifications"
+                    description = "إشعارات أمنية مهمة"
                 }
             )
 

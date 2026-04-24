@@ -1,73 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ===== Setup Wizard ===== -->
-    <string name="setup_welcome_desc">Transform your phone into two completely separate devices. Each profile has its own apps, data, photos, contacts, and lock screen credential.\n\nWhen you unlock the phone, the system automatically loads the profile that matches your credential. No app launcher needed — full system integration.</string>
-
-    <string name="setup_permissions_title">System Permissions</string>
-    <string name="setup_permissions_desc">Dual Persona System needs special permissions to manage user profiles at the system level.</string>
-
-    <string name="setup_user_a_title">Configure Profile A</string>
-    <string name="setup_user_a_desc">This is your primary profile. You\'ll set its name and lock screen credential through Android\'s security settings.</string>
-
-    <string name="setup_user_b_title">Configure Profile B</string>
-    <string name="setup_user_b_desc">A secondary Android user will be created with a completely separate environment. Each user gets their own storage, apps, and credentials.</string>
-
-    <string name="setup_multi_user_not_supported">Your device doesn\'t support multi-user mode. The app will work in limited mode.</string>
-
-    <string name="setup_security_title">Security Settings</string>
-    <string name="setup_security_desc">Configure advanced security options for maximum protection.</string>
-
-    <string name="setup_complete_title">Setup Complete</string>
-    <string name="setup_complete_desc">Review your configuration before activation.</string>
-
-    <string name="setup_credential_info">Your credential is set through Android\'s system security settings. We never store your actual password or pattern.</string>
-
-    <string name="setup_stealth_info">When enabled, the app completely disappears from your phone. Access it anytime by dialing your secret code on the phone keypad.</string>
-
-    <string name="setup_important_notice">IMPORTANT: Each user sets their own credential through Android Settings > Security. When the system lock screen appears, just enter the credential for the profile you want to access. The system automatically loads the correct profile.</string>
-
-    <string name="setup_success_title">System Activated!</string>
-    <string name="setup_success_message">Dual Persona System is now active.\n\nTo switch profiles:\n1. Lock your phone\n2. Unlock with the other profile\'s credential\n3. The system loads that profile automatically\n\nTo access settings: Dial *#*#7890#*#* on the phone keypad.</string>
+    <string name="setup_welcome_desc">حوّل هاتفك إلى جهازين منفصلين تماماً. كل ملف تعريف (Profile) له تطبيقاته وبياناته وصوره وجهات اتصاله وكلمة مرور القفل الخاصة به.\n\nعند فتح القفل، يحمّل النظام تلقائياً الملف الشخصي الذي يتوافق مع بيانات الاعتماد الخاصة بك. لا حاجة لمشغل تطبيقات — دمج كامل مع النظام.</string>
+    <string name="setup_permissions_title">صلاحيات النظام</string>
+    <string name="setup_permissions_desc">يحتاج نظام الهوية المزدوجة إلى صلاحيات خاصة لإدارة ملفات المستخدمين على مستوى النظام.</string>
+    <string name="setup_user_a_title">تكوين الملف الشخصي A</string>
+    <string name="setup_user_a_desc">هذا هو ملفك الشخصي الأساسي. ستقوم بتعيين اسمه وبيانات اعتماد شاشة القفل من خلال إعدادات الأمان في Android.</string>
+    <string name="setup_user_b_title">تكوين الملف الشخصي B</string>
+    <string name="setup_user_b_desc">سيتم إنشاء مستخدم Android ثانوي ببيئة منفصلة تماماً. كل مستخدم يحصل على تخزين وتطبيقات وبيانات اعتماد خاصة به.</string>
+    <string name="setup_multi_user_not_supported">جهازك لا يدعم وضع المستخدمين المتعددين. سيعمل التطبيق في وضع محدود.</string>
+    <string name="setup_security_title">إعدادات الأمان</string>
+    <string name="setup_security_desc">تكوين خيارات الأمان المتقدمة للحماية القصوى.</string>
+    <string name="setup_complete_title">اكتمال الإعداد</string>
+    <string name="setup_complete_desc">راجع التكوين الخاص بك قبل التفعيل.</string>
+    <string name="setup_credential_info">يتم تعيين بيانات الاعتماد الخاصة بك من خلال إعدادات الأمان في Android. لا نخزن كلمة المرور أو النمط الفعلي أبداً.</string>
+    <string name="setup_stealth_info">عند التمكين، يختفي التطبيق تماماً من هاتفك. يمكنك الوصول إليه في أي وقت عن طريق طلب الرمز السري على لوحة مفاتيح الهاتف.</string>
+    <string name="setup_important_notice">مهم: يقوم كل مستخدم بتعيين بيانات اعتماده الخاصة من خلال إعدادات الأمان في Android. عند ظهور شاشة قفل النظام، أدخل بيانات الاعتماد للملف الشخصي الذي تريد الوصول إليه. يقوم النظام تلقائياً بتحميل الملف الشخصي الصحيح.</string>
+    <string name="setup_success_title">تم تفعيل النظام!</string>
+    <string name="setup_success_message">نظام الهوية المزدوجة نشط الآن.\n\nللتبديل بين الملفات الشخصية:\n1. اقفل هاتفك\n2. افتح القفل ببيانات اعتماد الملف الشخصي الآخر\n3. يقوم النظام بتحميل الملف الشخصي تلقائياً\n\nللوصول إلى الإعدادات: اطلب *#*#7890#*#* على لوحة مفاتيح الهاتف.</string>
 
     <!-- ===== Button Labels ===== -->
-    <string name="get_started">Get Started</string>
-    <string name="grant_permissions">Grant Permissions</string>
-    <string name="set_and_continue">Set &amp; Continue</string>
-    <string name="create_user_b">Create User B</string>
-    <string name="activate_now">Activate Now</string>
-    <string name="next">Next</string>
-    <string name="skip">Skip</string>
+    <string name="get_started">ابدأ</string>
+    <string name="grant_permissions">منح الصلاحيات</string>
+    <string name="set_and_continue">تعيين ومتابعة</string>
+    <string name="create_user_b">إنشاء المستخدم B</string>
+    <string name="activate_now">تفعيل الآن</string>
+    <string name="next">التالي</string>
+    <string name="skip">تخطي</string>
 
     <!-- ===== General ===== -->
-    <string name="app_name">System Config</string>
-    <string name="profile_a">Profile A</string>
-    <string name="profile_b">Profile B</string>
-    <string name="secret_code_hint">Dial *#*#CODE#*#*</string>
+    <string name="app_name">نظام الهوية المزدوجة</string>
+    <string name="profile_a">الملف الشخصي A</string>
+    <string name="profile_b">الملف الشخصي B</string>
+    <string name="secret_code_hint">اطلب *#*#CODE#*#*</string>
 
     <!-- ===== Dashboard ===== -->
-    <string name="dashboard_title">Dual Persona Control Panel</string>
-    <string name="dashboard_accessed_via">Accessed via secret code</string>
-    <string name="isolation_secure">Data Isolation: Secure</string>
-    <string name="isolation_warning">Data Isolation: Check Failed</string>
-    <string name="services_running">Services: Running</string>
-    <string name="services_stopped">Services: Stopped</string>
-    <string name="stealth_active">Stealth: Active</string>
-    <string name="stealth_off">Stealth: Off</string>
-    <string name="switch_to_profile_b">Switch to Profile B</string>
-    <string name="switch_to_profile_a">Switch to Profile A</string>
-    <string name="view_security_logs">View Security Logs</string>
-    <string name="change_secret_code">Change Secret Code</string>
-    <string name="toggle_stealth">Toggle Stealth Mode</string>
-    <string name="run_isolation_check">Run Isolation Check</string>
-    <string name="refresh_status">Refresh Status</string>
-    <string name="reset_system">Reset System</string>
-    <string name="reset_warning">WARNING: This will remove the secondary user and ALL their data. This action CANNOT be undone.</string>
+    <string name="dashboard_title">لوحة التحكم</string>
+    <string name="dashboard_accessed_via">تم الوصول عبر الرمز السري</string>
+    <string name="isolation_secure">عزل البيانات: آمن</string>
+    <string name="isolation_warning">عزل البيانات: فشل التحقق</string>
+    <string name="services_running">الخدمات: تعمل</string>
+    <string name="services_stopped">الخدمات: متوقفة</string>
+    <string name="stealth_active">التخفي: مفعّل</string>
+    <string name="stealth_off">التخفي: معطّل</string>
+    <string name="switch_to_profile_b">التبديل إلى الملف B</string>
+    <string name="switch_to_profile_a">التبديل إلى الملف A</string>
+    <string name="view_security_logs">عرض سجل الأمان</string>
+    <string name="change_secret_code">تغيير الرمز السري</string>
+    <string name="toggle_stealth">تشغيل/إيقاف التخفي</string>
+    <string name="run_isolation_check">فحص عزل البيانات</string>
+    <string name="refresh_status">تحديث الحالة</string>
+    <string name="reset_system">إعادة تعيين النظام</string>
+    <string name="reset_warning">تحذير: سيؤدي هذا إلى حذف المستخدم الثان وجميع بياناته. لا يمكن التراجع عن هذا الإجراء!</string>
 
     <!-- ===== Notifications ===== -->
-    <string name="notification_system_title">Dual Persona System</string>
-    <string name="notification_system_text">System active — managing dual profiles</string>
-    <string name="notification_guard_title">Security Guard</string>
-    <string name="notification_guard_text">Monitoring data isolation</string>
-    <string name="notification_alert_title">Security Alert</string>
-    <string name="notification_alert_text">Suspicious activity detected</string>
+    <string name="notification_system_title">نظام الهوية المزدوجة</string>
+    <string name="notification_system_text">النظام نشط - إدارة الملفات المزدوجة</string>
+    <string name="notification_guard_title">الحماية الأمنية</string>
+    <string name="notification_guard_text">مراقبة عزل البيانات</string>
+    <string name="notification_alert_title">تنبيه أمني</string>
+    <string name="notification_alert_text">تم رصد نشاط مشبوه</string>
+
+    <!-- ===== Dynamic Labels (used in code) ===== -->
+    <string name="label_profile_name_a">اسم الملف الشخصي (A):</string>
+    <string name="label_profile_name_b">اسم الملف الشخصي (B):</string>
+    <string name="hint_profile_a">مثال: شخصي</string>
+    <string name="hint_profile_b">مثال: عمل</string>
+    <string name="label_credential_type">نوع قفل الشاشة:</string>
+    <string name="label_secret_code">رمز الوصول السري (اطلب *#*#CODE#*#*):</string>
+    <string name="hint_secret_code">رمز من 4 أرقام</string>
+    <string name="label_stealth_mode">تفعيل وضع التخفي (إخفاء التطبيق بعد الإعداد)</string>
+    <string name="label_max_attempts">الحد الأقصى للمحاولات الخاطئة:</string>
+    <string name="perm_device_admin">مسؤول الجهاز</string>
+    <string name="perm_device_admin_desc">مطلوب لإدارة المستخدمين على مستوى النظام</string>
+    <string name="perm_notifications">الوصول للإشعارات</string>
+    <string name="perm_notifications_desc">للتنبيهات الأمنية وإدارة الخدمات</string>
+    <string name="perm_accessibility">خدمة إمكانية الوصول</string>
+    <string name="perm_accessibility_desc">لمراقبة البيانات المحسّنة (اختياري)</string>
+
+    <!-- ===== Credential Types ===== -->
+    <string name="cred_pin">رقم PIN</string>
+    <string name="cred_pattern">نمط</string>
+    <string name="cred_password">كلمة مرور</string>
+    <string name="cred_fingerprint_pin">بصمة + رقم PIN</string>
+    <string name="cred_fingerprint_pattern">بصمة + نمط</string>
+
+    <!-- ===== Summary Labels ===== -->
+    <string name="summary_profile_a">الملف الشخصي A: %s</string>
+    <string name="summary_credential">بيانات الاعتماد: %s</string>
+    <string name="summary_profile_b">الملف الشخصي B: %s</string>
+    <string name="summary_status_created">الحالة: تم الإنشاء</string>
+    <string name="summary_status_not_created">الحالة: لم يتم الإنشاء</string>
+    <string name="summary_secret_code">الرمز السري: *#*#%s#*#*</string>
+    <string name="summary_stealth_enabled">وضع التخفي: مفعّل</string>
+    <string name="summary_stealth_disabled">وضع التخفي: معطّل</string>
+
+    <!-- ===== Dialog Messages ===== -->
+    <string name="dialog_admin_required">مسؤول الجهاز مطلوب للتكامل مع النظام</string>
+    <string name="dialog_creating_user_b">جارٍ إنشاء المستخدم B...</string>
+    <string name="dialog_create_user_failed">فشل إنشاء المستخدم: %s</string>
+    <string name="dialog_activating">جارٍ تفعيل نظام الهوية المزدوجة...</string>
+    <string name="dialog_system_active">النظام نشط بالفعل</string>
+    <string name="dialog_system_active_msg">نظام الهوية المزدوجة مُعد مسبقاً.\n\nالرمز السري: *#*#%s#*#*</string>
+    <string name="dialog_reconfigure">إعادة التكوين</string>
+    <string name="dialog_close">إغلاق</string>
+    <string name="dialog_ok">حسناً</string>
+    <string name="dialog_cancel">إلغاء</string>
+    <string name="dialog_save">حفظ</string>
+    <string name="dialog_code_updated">تم تحديث الرمز إلى: *#*#%s#*#*</string>
+    <string name="dialog_code_invalid">الرمز يجب أن يكون من 4 إلى 6 أرقام</string>
+    <string name="dialog_stealth_current">الحالة الحالية: %s</string>
+    <string name="dialog_stealth_enable">تفعيل</string>
+    <string name="dialog_stealth_disable">إيقاف</string>
+    <string name="dialog_stealth_action">هل تريد %s وضع التخفي؟</string>
+    <string name="dialog_stealth_on">مفعّل</string>
+    <string name="dialog_stealth_off">معطّل</string>
+
+    <!-- ===== Dashboard Dynamic ===== -->
+    <string name="dash_profile_a_main">الملف الشخصي A (الرئيسي)</string>
+    <string name="dash_profile_b_secondary">الملف الشخصي B (الثانوي)</string>
+    <string name="dash_credential">بيانات الاعتماد: %s</string>
+    <string name="dash_status_active">الحالة: نشط</string>
+    <string name="dash_status_not_created">الحالة: لم يتم الإنشاء</string>
+    <string name="dash_status_active_id">الحالة: نشط (المعرف: %d)</string>
+    <string name="dash_system_status">حالة النظام</string>
+    <string name="dash_isolation_checking">عزل البيانات: جارٍ الفحص...</string>
+    <string name="dash_services_checking">الخدمات: جارٍ الفحص...</string>
+    <string name="dash_stealth_checking">التخفي: جارٍ الفحص...</string>
+    <string name="dash_no_logs">لا توجد أحداث أمنية مسجلة.</string>
+    <string name="dash_clear_logs">مسح السجلات</string>
+    <string name="dash_new_code">رمز جديد (4-6 أرقام)</string>
+    <string name="dash_change_code">تغيير الرمز السري</string>
+    <string name="dash_stealth_mode">وضع التخفي</string>
+    <string name="dash_reset_confirm">تحذير: سيؤدي هذا إلى:\n1. حذف المستخدم الثانوي وجميع بياناته\n2. مسح جميع الإعدادات\n3. إيقاف جميع الخدمات\n4. إظهار التطبيق\n\nلا يمكن التراجع عن هذا الإجراء!</string>
+    <string name="dash_reset_all">إعادة تعيين الكل</string>
+    <string name="dash_reset_done">تم إعادة التعيين. أعد تشغيل التطبيق للإعداد.</string>
+    <string name="dash_user_not_created">لم يتم إنشاء المستخدم الثانوي</string>
+    <string name="dash_switching">جارٍ التبديل إلى %s...</string>
+    <string name="dash_switch_failed">فشل التبديل: %s</string>
+
+    <!-- ===== Receiver Messages ===== -->
+    <string name="admin_activated">تم تفعيل مسؤول الجهاز</string>
+    <string name="admin_deactivated">تم إيقاف مسؤول الجهاز</string>
+    <string name="admin_disable_warning">تحذير: تعطيل النظام سيؤثر على أمان الملفات المزدوجة.</string>
 </resources>

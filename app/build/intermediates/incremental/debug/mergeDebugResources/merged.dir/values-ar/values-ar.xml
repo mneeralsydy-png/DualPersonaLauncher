@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2" xmlns:ns2="http://schemas.android.com/tools">
+    <plurals name="mtrl_badge_content_description">
+    <item quantity="zero">%d إشعار جديد</item>
+    <item quantity="one">إشعار جديد واحد (%d)</item>
+    <item quantity="two">إشعاران جديدان (%d)</item>
+    <item quantity="few">%d إشعارات جديدة</item>
+    <item quantity="many">%d إشعارًا جديدًا</item>
+    <item quantity="other">%d إشعار جديد</item>
+  </plurals>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"التوجه إلى المنزل"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"التنقل إلى أعلى"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"خيارات أكثر"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"تم"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"عرض الكل"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"اختيار تطبيق"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"إيقاف"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"مفعّلة"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt+"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl+"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"حذف"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"enter"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Function+"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta+"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Shift+"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"فضاء"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym+"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"القائمة+"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"بحث…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"محو طلب البحث"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"طلب بحث"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"البحث"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"إرسال طلب البحث"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"بحث صوتي"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"مشاركة مع"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"مشاركة مع <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"تصغير"</string>
+    <string name="activate_now">تفعيل الآن</string>
+    <string name="admin_activated">تم تفعيل مسؤول الجهاز</string>
+    <string name="admin_deactivated">تم إيقاف مسؤول الجهاز</string>
+    <string name="admin_disable_warning">تحذير: تعطيل النظام سيؤثر على أمان الملفات المزدوجة.</string>
+    <string name="app_name">نظام الهوية المزدوجة</string>
+    <string name="bottomsheet_action_collapse">تصغير البطاقة السفلية</string>
+    <string name="bottomsheet_action_expand">توسيع البطاقة السفلية</string>
+    <string name="bottomsheet_action_expand_halfway">توسيع البطاقة السفلية</string>
+    <string name="bottomsheet_drag_handle_clicked">تم النقر مرّتين على مقبض السحب.</string>
+    <string name="bottomsheet_drag_handle_content_description">مقبض السحب</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"ردّ"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"فيديو"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"رفض"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"قطع الاتصال"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"مكالمة واردة"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"مكالمة جارية"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"يتم فحص المكالمة الواردة"</string>
+    <string name="change_secret_code">تغيير الرمز السري</string>
+    <string name="character_counter_content_description">تمّ إدخال %1$d حرف من إجمالي %2$d.</string>
+    <string name="character_counter_overflowed_content_description">تجاوز عدد الأحرف المسموح به %1$d من %2$d.</string>
+    <string name="clear_text_end_icon_content_description">محو النص</string>
+    <string msgid="5912733858573823945" name="confirm_device_credential_password">"استخدام كلمة المرور"</string>
+    <string name="create_user_b">إنشاء المستخدم B</string>
+    <string name="cred_fingerprint_pattern">بصمة + نمط</string>
+    <string name="cred_fingerprint_pin">بصمة + رقم PIN</string>
+    <string name="cred_password">كلمة مرور</string>
+    <string name="cred_pattern">نمط</string>
+    <string name="cred_pin">رقم PIN</string>
+    <string name="dash_change_code">تغيير الرمز السري</string>
+    <string name="dash_clear_logs">مسح السجلات</string>
+    <string name="dash_credential">بيانات الاعتماد: %s</string>
+    <string name="dash_isolation_checking">عزل البيانات: جارٍ الفحص...</string>
+    <string name="dash_new_code">رمز جديد (4-6 أرقام)</string>
+    <string name="dash_no_logs">لا توجد أحداث أمنية مسجلة.</string>
+    <string name="dash_profile_a_main">الملف الشخصي A (الرئيسي)</string>
+    <string name="dash_profile_b_secondary">الملف الشخصي B (الثانوي)</string>
+    <string name="dash_reset_all">إعادة تعيين الكل</string>
+    <string name="dash_reset_confirm">تحذير: سيؤدي هذا إلى:\n1. حذف المستخدم الثانوي وجميع بياناته\n2. مسح جميع الإعدادات\n3. إيقاف جميع الخدمات\n4. إظهار التطبيق\n\nلا يمكن التراجع عن هذا الإجراء!</string>
+    <string name="dash_reset_done">تم إعادة التعيين. أعد تشغيل التطبيق للإعداد.</string>
+    <string name="dash_services_checking">الخدمات: جارٍ الفحص...</string>
+    <string name="dash_status_active">الحالة: نشط</string>
+    <string name="dash_status_active_id">الحالة: نشط (المعرف: %d)</string>
+    <string name="dash_status_not_created">الحالة: لم يتم الإنشاء</string>
+    <string name="dash_stealth_checking">التخفي: جارٍ الفحص...</string>
+    <string name="dash_stealth_mode">وضع التخفي</string>
+    <string name="dash_switch_failed">فشل التبديل: %s</string>
+    <string name="dash_switching">جارٍ التبديل إلى %s...</string>
+    <string name="dash_system_status">حالة النظام</string>
+    <string name="dash_user_not_created">لم يتم إنشاء المستخدم الثانوي</string>
+    <string name="dashboard_accessed_via">تم الوصول عبر الرمز السري</string>
+    <string name="dashboard_title">لوحة التحكم</string>
+    <string msgid="4776854077120974966" name="default_error_msg">"خطأ غير معروف"</string>
+    <string name="dialog_activating">جارٍ تفعيل نظام الهوية المزدوجة...</string>
+    <string name="dialog_admin_required">مسؤول الجهاز مطلوب للتكامل مع النظام</string>
+    <string name="dialog_cancel">إلغاء</string>
+    <string name="dialog_close">إغلاق</string>
+    <string name="dialog_code_invalid">الرمز يجب أن يكون من 4 إلى 6 أرقام</string>
+    <string name="dialog_code_updated">تم تحديث الرمز إلى: *#*#%s#*#*</string>
+    <string name="dialog_create_user_failed">فشل إنشاء المستخدم: %s</string>
+    <string name="dialog_creating_user_b">جارٍ إنشاء المستخدم B...</string>
+    <string name="dialog_ok">حسناً</string>
+    <string name="dialog_reconfigure">إعادة التكوين</string>
+    <string name="dialog_save">حفظ</string>
+    <string name="dialog_stealth_action">هل تريد %s وضع التخفي؟</string>
+    <string name="dialog_stealth_current">الحالة الحالية: %s</string>
+    <string name="dialog_stealth_disable">إيقاف</string>
+    <string name="dialog_stealth_enable">تفعيل</string>
+    <string name="dialog_stealth_off">معطّل</string>
+    <string name="dialog_stealth_on">مفعّل</string>
+    <string name="dialog_system_active">النظام نشط بالفعل</string>
+    <string name="dialog_system_active_msg">نظام الهوية المزدوجة مُعد مسبقاً.\n\nالرمز السري: *#*#%s#*#*</string>
+    <string name="error_icon_content_description">خطأ</string>
+    <string name="exposed_dropdown_menu_content_description">عرض القائمة المنسدلة</string>
+    <string msgid="1072308044213194243" name="fingerprint_dialog_touch_sensor">"المس زر استشعار بصمة الإصبع"</string>
+    <string msgid="8216738333501875566" name="fingerprint_error_hw_not_available">"جهاز بصمة الإصبع غير متاح."</string>
+    <string msgid="6306988885793029438" name="fingerprint_error_hw_not_present">"لا يحتوي هذا الجهاز على جهاز استشعار بصمات الأصابع."</string>
+    <string msgid="7291787166416782245" name="fingerprint_error_lockout">"تم إجراء محاولات كثيرة جدًا. يُرجى المحاولة مرة أخرى لاحقًا."</string>
+    <string msgid="7520712796891883488" name="fingerprint_error_no_fingerprints">"ليست هناك بصمات إصبع مسجَّلة."</string>
+    <string msgid="7627716295344353987" name="fingerprint_error_user_canceled">"تم إلغاء تشغيل بصمة الإصبع بواسطة المستخدم."</string>
+    <string msgid="3873359464293253009" name="fingerprint_not_recognized">"لم يتم التعرف عليها."</string>
+    <string msgid="3791785319221634505" name="generic_error_no_device_credential">"لم يتم ضبط رقم تعريف شخصي أو نقش أو كلمة مرور."</string>
+    <string msgid="1807436368654974044" name="generic_error_no_keyguard">"هذا الجهاز لا يتيح استخدام رقم تعريف شخصي أو نقش أو كلمة مرور."</string>
+    <string msgid="7309881387583143581" name="generic_error_user_canceled">"ألغى المستخدم المصادقة."</string>
+    <string name="get_started">ابدأ</string>
+    <string name="grant_permissions">منح الصلاحيات</string>
+    <string name="hint_profile_a">مثال: شخصي</string>
+    <string name="hint_profile_b">مثال: عمل</string>
+    <string name="hint_secret_code">رمز من 4 أرقام</string>
+    <string name="icon_content_description">رمز مربع الحوار</string>
+    <string name="isolation_secure">عزل البيانات: آمن</string>
+    <string name="isolation_warning">عزل البيانات: فشل التحقق</string>
+    <string name="item_view_role_description">علامة تبويب</string>
+    <string name="label_credential_type">نوع قفل الشاشة:</string>
+    <string name="label_max_attempts">الحد الأقصى للمحاولات الخاطئة:</string>
+    <string name="label_profile_name_a">اسم الملف الشخصي (A):</string>
+    <string name="label_profile_name_b">اسم الملف الشخصي (B):</string>
+    <string name="label_secret_code">رمز الوصول السري (اطلب *#*#CODE#*#*):</string>
+    <string name="label_stealth_mode">تفعيل وضع التخفي (إخفاء التطبيق بعد الإعداد)</string>
+    <string name="material_clock_toggle_content_description">يُرجى اختيار صباحًا أو مساءً.</string>
+    <string name="material_hour_24h_suffix">%1$s ساعة</string>
+    <string name="material_hour_selection">تحديد الساعة</string>
+    <string name="material_hour_suffix">الساعة %1$s</string>
+    <string name="material_minute_selection">تحديد الدقائق</string>
+    <string name="material_minute_suffix">%1$s دقيقة</string>
+    <string name="material_timepicker_am">صباحًا</string>
+    <string name="material_timepicker_clock_mode_description">يُرجى التبديل إلى وضع الساعة لإدخال الوقت.</string>
+    <string name="material_timepicker_hour">الساعة</string>
+    <string name="material_timepicker_minute">دقيقة</string>
+    <string name="material_timepicker_pm">مساءً</string>
+    <string name="material_timepicker_select_time">اختيار الوقت</string>
+    <string name="material_timepicker_text_input_mode_description">يُرجى التبديل إلى وضع إدخال النص لإدخال الوقت.</string>
+    <string name="mtrl_badge_numberless_content_description">إشعار جديد</string>
+    <string name="mtrl_chip_close_icon_content_description">إزالة %1$s</string>
+    <string name="mtrl_exceed_max_badge_number_content_description" ns2:ignore="PluralsCandidate">يبلغ عدد الإشعارات الجديدة أكثر من %1$d.</string>
+    <string name="mtrl_picker_a11y_next_month">التغيير إلى الشهر التالي</string>
+    <string name="mtrl_picker_a11y_prev_month">التغيير إلى الشهر السابق</string>
+    <string name="mtrl_picker_announce_current_range_selection">اختيار تاريخ البدء: %1$s – اختيار تاريخ الانتهاء: %2$s</string>
+    <string name="mtrl_picker_announce_current_selection">الاختيار الحالي: %1$s</string>
+    <string name="mtrl_picker_announce_current_selection_none">بلا</string>
+    <string name="mtrl_picker_cancel">إلغاء</string>
+    <string name="mtrl_picker_confirm">حسنًا</string>
+    <string name="mtrl_picker_date_header_selected">%1$s</string>
+    <string name="mtrl_picker_date_header_title">يُرجى اختيار تاريخ.</string>
+    <string name="mtrl_picker_date_header_unselected">التاريخ المحدَّد</string>
+    <string name="mtrl_picker_day_of_week_column_header">عمود الأيام: %1$s</string>
+    <string name="mtrl_picker_end_date_description">تاريخ الانتهاء: %1$s</string>
+    <string name="mtrl_picker_invalid_format">التنسيق غير صالح</string>
+    <string name="mtrl_picker_invalid_format_example">مثال: %1$s</string>
+    <string name="mtrl_picker_invalid_format_use">استخدام: %1$s</string>
+    <string name="mtrl_picker_invalid_range">النطاق غير صالح</string>
+    <string name="mtrl_picker_navigate_to_current_year_description">الانتقال إلى السنة الحالية %1$d</string>
+    <string name="mtrl_picker_navigate_to_year_description">التنقل إلى العام %1$d</string>
+    <string name="mtrl_picker_out_of_range">خارج النطاق: %1$s</string>
+    <string name="mtrl_picker_range_header_only_end_selected">تاريخ البدء – %1$s</string>
+    <string name="mtrl_picker_range_header_only_start_selected">%1$s – تاريخ الانتهاء</string>
+    <string name="mtrl_picker_range_header_selected">%1$s – %2$s</string>
+    <string name="mtrl_picker_range_header_title">يُرجى اختيار نطاق زمني.</string>
+    <string name="mtrl_picker_range_header_unselected">تاريخ البدء - تاريخ الانتهاء</string>
+    <string name="mtrl_picker_save">حفظ</string>
+    <string name="mtrl_picker_start_date_description">تاريخ البدء: %1$s</string>
+    <string name="mtrl_picker_text_input_date_hint">التاريخ</string>
+    <string name="mtrl_picker_text_input_date_range_end_hint">تاريخ الانتهاء</string>
+    <string name="mtrl_picker_text_input_date_range_start_hint">تاريخ البدء</string>
+    <string name="mtrl_picker_text_input_day_abbr">ي</string>
+    <string name="mtrl_picker_text_input_month_abbr">ش</string>
+    <string name="mtrl_picker_text_input_year_abbr">س</string>
+    <string name="mtrl_picker_today_description">اليوم %1$s</string>
+    <string name="mtrl_picker_toggle_to_calendar_input_mode">التبديل إلى وضع \"الإدخال في التقويم\"</string>
+    <string name="mtrl_picker_toggle_to_day_selection">يمكنك النقر للتبديل إلى عرض \"تقويم Google\".</string>
+    <string name="mtrl_picker_toggle_to_text_input_mode">التبديل إلى وضع \"إدخال النص\"</string>
+    <string name="mtrl_picker_toggle_to_year_selection">يمكنك النقر للتبديل إلى عرض السنة.</string>
+    <string name="mtrl_timepicker_cancel">إلغاء</string>
+    <string name="mtrl_timepicker_confirm">حسنًا</string>
+    <string name="next">التالي</string>
+    <string name="notification_alert_text">تم رصد نشاط مشبوه</string>
+    <string name="notification_alert_title">تنبيه أمني</string>
+    <string name="notification_guard_text">مراقبة عزل البيانات</string>
+    <string name="notification_guard_title">الحماية الأمنية</string>
+    <string name="notification_system_text">النظام نشط - إدارة الملفات المزدوجة</string>
+    <string name="notification_system_title">نظام الهوية المزدوجة</string>
+    <string name="password_toggle_content_description">عرض كلمة المرور</string>
+    <string name="perm_accessibility">خدمة إمكانية الوصول</string>
+    <string name="perm_accessibility_desc">لمراقبة البيانات المحسّنة (اختياري)</string>
+    <string name="perm_device_admin">مسؤول الجهاز</string>
+    <string name="perm_device_admin_desc">مطلوب لإدارة المستخدمين على مستوى النظام</string>
+    <string name="perm_notifications">الوصول للإشعارات</string>
+    <string name="perm_notifications_desc">للتنبيهات الأمنية وإدارة الخدمات</string>
+    <string name="profile_a">الملف الشخصي A</string>
+    <string name="profile_b">الملف الشخصي B</string>
+    <string name="refresh_status">تحديث الحالة</string>
+    <string name="reset_system">إعادة تعيين النظام</string>
+    <string name="reset_warning">تحذير: سيؤدي هذا إلى حذف المستخدم الثان وجميع بياناته. لا يمكن التراجع عن هذا الإجراء!</string>
+    <string name="run_isolation_check">فحص عزل البيانات</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"البحث"</string>
+    <string name="secret_code_hint">اطلب *#*#CODE#*#*</string>
+    <string name="services_running">الخدمات: تعمل</string>
+    <string name="services_stopped">الخدمات: متوقفة</string>
+    <string name="set_and_continue">تعيين ومتابعة</string>
+    <string name="setup_complete_desc">راجع التكوين الخاص بك قبل التفعيل.</string>
+    <string name="setup_complete_title">اكتمال الإعداد</string>
+    <string name="setup_credential_info">يتم تعيين بيانات الاعتماد الخاصة بك من خلال إعدادات الأمان في Android. لا نخزن كلمة المرور أو النمط الفعلي أبداً.</string>
+    <string name="setup_important_notice">مهم: يقوم كل مستخدم بتعيين بيانات اعتماده الخاصة من خلال إعدادات الأمان في Android. عند ظهور شاشة قفل النظام، أدخل بيانات الاعتماد للملف الشخصي الذي تريد الوصول إليه. يقوم النظام تلقائياً بتحميل الملف الشخصي الصحيح.</string>
+    <string name="setup_multi_user_not_supported">جهازك لا يدعم وضع المستخدمين المتعددين. سيعمل التطبيق في وضع محدود.</string>
+    <string name="setup_permissions_desc">يحتاج نظام الهوية المزدوجة إلى صلاحيات خاصة لإدارة ملفات المستخدمين على مستوى النظام.</string>
+    <string name="setup_permissions_title">صلاحيات النظام</string>
+    <string name="setup_security_desc">تكوين خيارات الأمان المتقدمة للحماية القصوى.</string>
+    <string name="setup_security_title">إعدادات الأمان</string>
+    <string name="setup_stealth_info">عند التمكين، يختفي التطبيق تماماً من هاتفك. يمكنك الوصول إليه في أي وقت عن طريق طلب الرمز السري على لوحة مفاتيح الهاتف.</string>
+    <string name="setup_success_message">نظام الهوية المزدوجة نشط الآن.\n\nللتبديل بين الملفات الشخصية:\n1. اقفل هاتفك\n2. افتح القفل ببيانات اعتماد الملف الشخصي الآخر\n3. يقوم النظام بتحميل الملف الشخصي تلقائياً\n\nللوصول إلى الإعدادات: اطلب *#*#7890#*#* على لوحة مفاتيح الهاتف.</string>
+    <string name="setup_success_title">تم تفعيل النظام!</string>
+    <string name="setup_user_a_desc">هذا هو ملفك الشخصي الأساسي. ستقوم بتعيين اسمه وبيانات اعتماد شاشة القفل من خلال إعدادات الأمان في Android.</string>
+    <string name="setup_user_a_title">تكوين الملف الشخصي A</string>
+    <string name="setup_user_b_desc">سيتم إنشاء مستخدم Android ثانوي ببيئة منفصلة تماماً. كل مستخدم يحصل على تخزين وتطبيقات وبيانات اعتماد خاصة به.</string>
+    <string name="setup_user_b_title">تكوين الملف الشخصي B</string>
+    <string name="setup_welcome_desc">حوّل هاتفك إلى جهازين منفصلين تماماً. كل ملف تعريف (Profile) له تطبيقاته وبياناته وصوره وجهات اتصاله وكلمة مرور القفل الخاصة به.\n\nعند فتح القفل، يحمّل النظام تلقائياً الملف الشخصي الذي يتوافق مع بيانات الاعتماد الخاصة بك. لا حاجة لمشغل تطبيقات — دمج كامل مع النظام.</string>
+    <string name="skip">تخطي</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="stealth_active">التخفي: مفعّل</string>
+    <string name="stealth_off">التخفي: معطّل</string>
+    <string name="summary_credential">بيانات الاعتماد: %s</string>
+    <string name="summary_profile_a">الملف الشخصي A: %s</string>
+    <string name="summary_profile_b">الملف الشخصي B: %s</string>
+    <string name="summary_secret_code">الرمز السري: *#*#%s#*#*</string>
+    <string name="summary_status_created">الحالة: تم الإنشاء</string>
+    <string name="summary_status_not_created">الحالة: لم يتم الإنشاء</string>
+    <string name="summary_stealth_disabled">وضع التخفي: معطّل</string>
+    <string name="summary_stealth_enabled">وضع التخفي: مفعّل</string>
+    <string name="switch_to_profile_a">التبديل إلى الملف A</string>
+    <string name="switch_to_profile_b">التبديل إلى الملف B</string>
+    <string name="toggle_stealth">تشغيل/إيقاف التخفي</string>
+    <string name="view_security_logs">عرض سجل الأمان</string>
+</resources>

@@ -1,10 +1,7 @@
 package com.dualpersona.system.ui.dashboard
 
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -19,19 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/**
- * DashboardActivity - Hidden management dashboard
- *
- * Only accessible via secret dialer code (*#*#CODE#*#*)
- * Provides full control over the dual persona system:
- * - View both profiles
- * - Switch users
- * - Modify security settings
- * - View security logs
- * - Toggle stealth mode
- * - Remove secondary user
- * - Reset system
- */
 class DashboardActivity : AppCompatActivity() {
 
     private lateinit var prefs: PreferencesManager
@@ -56,113 +40,95 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun setupViews() {
-        // Header
-        findViewById<TextView>(R.id.tv_dashboard_title).text = "Dual Persona Control Panel"
+        findViewById<TextView>(R.id.tv_dashboard_title).text = getString(R.string.dashboard_title)
 
-        // Profile A info
+        // Profile A
         findViewById<TextView>(R.id.tv_profile_a_name).text = prefs.getProfileName(0)
         findViewById<TextView>(R.id.tv_profile_a_cred).text =
-            "Credential: ${prefs.getCredentialType(0)}"
+            getString(R.string.dash_credential, prefs.getCredentialType(0))
 
-        // Profile B info
+        // Profile B
         findViewById<TextView>(R.id.tv_profile_b_name).text = prefs.getProfileName(1)
         val userInfo = userManager.getSecondaryUserInfo()
-        findViewById<TextView>(R.id.tv_profile_b_status).text =
-            if (userInfo != null) "Status: Active" else "Status: Not Created"
+        if (userInfo != null) {
+            findViewById<TextView>(R.id.tv_profile_b_status).text =
+                getString(R.string.dash_status_active_id, userInfo["id"] as? Int ?: 0)
+        } else {
+            findViewById<TextView>(R.id.tv_profile_b_status).text =
+                getString(R.string.dash_status_not_created)
+        }
 
-        // Isolation status
+        // Isolation
         val tvIsolation = findViewById<TextView>(R.id.tv_isolation_status)
+        tvIsolation.text = getString(R.string.dash_isolation_checking)
         lifecycleScope.launch {
             val report = withContext(Dispatchers.IO) { dataGuard.verifyIsolation() }
-            tvIsolation.text = if (report.allPassed) "Data Isolation: Secure" else "Data Isolation: Check Failed"
+            tvIsolation.text = if (report.allPassed)
+                getString(R.string.isolation_secure) else getString(R.string.isolation_warning)
             tvIsolation.setTextColor(getColor(
                 if (report.allPassed) android.R.color.holo_green_dark
                 else android.R.color.holo_red_dark
             ))
         }
 
-        // Service status
+        // Services
         findViewById<TextView>(R.id.tv_service_status).text =
-            if (prefs.isServiceStarted()) "Services: Running" else "Services: Stopped"
+            if (prefs.isServiceStarted()) getString(R.string.services_running)
+            else getString(R.string.services_stopped)
 
-        // Stealth status
+        // Stealth
         findViewById<TextView>(R.id.tv_stealth_status).text =
-            if (prefs.isStealthModeEnabled()) "Stealth: Active" else "Stealth: Off"
+            if (prefs.isStealthModeEnabled()) getString(R.string.stealth_active)
+            else getString(R.string.stealth_off)
 
-        // ===== Action Buttons =====
-
-        // Switch to Profile B
-        findViewById<Button>(R.id.btn_switch_to_b)?.setOnClickListener {
-            switchToUserB()
-        }
-
-        // Switch to Profile A
-        findViewById<Button>(R.id.btn_switch_to_a)?.setOnClickListener {
-            switchToUserA()
-        }
-
-        // Security Logs
-        findViewById<Button>(R.id.btn_view_logs)?.setOnClickListener {
-            showSecurityLogs()
-        }
-
-        // Change Secret Code
-        findViewById<Button>(R.id.btn_change_secret)?.setOnClickListener {
-            changeSecretCode()
-        }
-
-        // Toggle Stealth
-        findViewById<Button>(R.id.btn_toggle_stealth)?.setOnClickListener {
-            toggleStealthMode()
-        }
-
-        // Reset System
-        findViewById<Button>(R.id.btn_reset)?.setOnClickListener {
-            confirmReset()
-        }
-
-        // Refresh
-        findViewById<Button>(R.id.btn_refresh)?.setOnClickListener {
-            refreshStatus()
-        }
-
-        // Isolation Check
-        findViewById<Button>(R.id.btn_check_isolation)?.setOnClickListener {
-            runIsolationCheck()
-        }
+        // Buttons
+        findViewById<Button>(R.id.btn_switch_to_b)?.setOnClickListener { switchToUserB() }
+        findViewById<Button>(R.id.btn_switch_to_a)?.setOnClickListener { switchToUserA() }
+        findViewById<Button>(R.id.btn_view_logs)?.setOnClickListener { showSecurityLogs() }
+        findViewById<Button>(R.id.btn_change_secret)?.setOnClickListener { changeSecretCode() }
+        findViewById<Button>(R.id.btn_toggle_stealth)?.setOnClickListener { toggleStealthMode() }
+        findViewById<Button>(R.id.btn_reset)?.setOnClickListener { confirmReset() }
+        findViewById<Button>(R.id.btn_refresh)?.setOnClickListener { refreshStatus() }
+        findViewById<Button>(R.id.btn_check_isolation)?.setOnClickListener { runIsolationCheck() }
     }
 
     private fun refreshStatus() {
-        // Refresh all status fields
         findViewById<TextView>(R.id.tv_profile_a_name)?.text = prefs.getProfileName(0)
         findViewById<TextView>(R.id.tv_profile_a_cred)?.text =
-            "Credential: ${prefs.getCredentialType(0)}"
+            getString(R.string.dash_credential, prefs.getCredentialType(0))
         findViewById<TextView>(R.id.tv_profile_b_name)?.text = prefs.getProfileName(1)
-        val userInfo = userManager.getSecondaryUserInfo()
-        findViewById<TextView>(R.id.tv_profile_b_status)?.text =
-            if (userInfo != null) "Status: Active (ID: ${userInfo.id})" else "Status: Not Created"
-        findViewById<TextView>(R.id.tv_stealth_status)?.text =
-            if (prefs.isStealthModeEnabled()) "Stealth: Active" else "Stealth: Off"
-        findViewById<TextView>(R.id.tv_service_status)?.text =
-            if (prefs.isServiceStarted()) "Services: Running" else "Services: Stopped"
-    }
 
-    // ===== User Switching =====
+        val userInfo = userManager.getSecondaryUserInfo()
+        if (userInfo != null) {
+            findViewById<TextView>(R.id.tv_profile_b_status)?.text =
+                getString(R.string.dash_status_active_id, userInfo["id"] as? Int ?: 0)
+        } else {
+            findViewById<TextView>(R.id.tv_profile_b_status)?.text =
+                getString(R.string.dash_status_not_created)
+        }
+
+        findViewById<TextView>(R.id.tv_stealth_status)?.text =
+            if (prefs.isStealthModeEnabled()) getString(R.string.stealth_active)
+            else getString(R.string.stealth_off)
+
+        findViewById<TextView>(R.id.tv_service_status)?.text =
+            if (prefs.isServiceStarted()) getString(R.string.services_running)
+            else getString(R.string.services_stopped)
+    }
 
     private fun switchToUserB() {
         if (!userManager.hasSecondaryUser()) {
-            Toast.makeText(this, "Secondary user not created", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.dash_user_not_created), Toast.LENGTH_SHORT).show()
             return
         }
-
         lifecycleScope.launch {
             try {
                 userManager.switchToSecondaryUserAsync()
                 Toast.makeText(this@DashboardActivity,
-                    "Switching to ${prefs.getProfileName(1)}...", Toast.LENGTH_SHORT).show()
+                    getString(R.string.dash_switching, prefs.getProfileName(1)), Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Toast.makeText(this@DashboardActivity,
-                    "Switch failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    getString(R.string.dash_switch_failed, e.message), Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -172,93 +138,85 @@ class DashboardActivity : AppCompatActivity() {
             try {
                 userManager.switchToMainUserAsync()
                 Toast.makeText(this@DashboardActivity,
-                    "Switching to ${prefs.getProfileName(0)}...", Toast.LENGTH_SHORT).show()
+                    getString(R.string.dash_switching, prefs.getProfileName(0)), Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Toast.makeText(this@DashboardActivity,
-                    "Switch failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    getString(R.string.dash_switch_failed, e.message), Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    // ===== Security Logs =====
-
     private fun showSecurityLogs() {
         val logs = dataGuard.getRecentSecurityEvents(50)
         val logText = if (logs.isEmpty()) {
-            "No security events recorded."
+            getString(R.string.dash_no_logs)
         } else {
             logs.joinToString("\n")
         }
 
         AlertDialog.Builder(this)
-            .setTitle("Security Log")
+            .setTitle(getString(R.string.view_security_logs))
             .setMessage(logText)
-            .setPositiveButton("Clear Logs") { _, _ ->
+            .setPositiveButton(getString(R.string.dash_clear_logs)) { _, _ ->
                 dataGuard.clearSecurityLogs()
-                Toast.makeText(this, "Logs cleared", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.dash_clear_logs), Toast.LENGTH_SHORT).show()
             }
-            .setNegativeButton("Close", null)
+            .setNegativeButton(getString(R.string.dialog_close), null)
             .show()
     }
-
-    // ===== Secret Code =====
 
     private fun changeSecretCode() {
         val et = EditText(this).apply {
             inputType = android.text.InputType.TYPE_CLASS_NUMBER
-            hint = "New 4-6 digit code"
+            hint = getString(R.string.dash_new_code)
             filters = arrayOf(android.text.InputFilter.LengthFilter(6))
             setText(stealthManager.getSecretCode())
         }
 
         AlertDialog.Builder(this)
-            .setTitle("Change Secret Access Code")
+            .setTitle(getString(R.string.dash_change_code))
             .setView(et)
-            .setPositiveButton("Save") { _, _ ->
+            .setPositiveButton(getString(R.string.dialog_save)) { _, _ ->
                 val code = et.text.toString()
                 if (code.length in 4..6) {
                     stealthManager.setSecretCode(code)
-                    Toast.makeText(this, "Code updated to: *#*#$code#*#*", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.dialog_code_updated, code), Toast.LENGTH_LONG).show()
                     SecurityLog.log(this, "INFO", "secret_code_change", "Secret code changed")
                 } else {
-                    Toast.makeText(this, "Code must be 4-6 digits", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.dialog_code_invalid), Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.dialog_cancel), null)
             .show()
     }
-
-    // ===== Stealth Toggle =====
 
     private fun toggleStealthMode() {
         val currentState = prefs.isStealthModeEnabled()
         val newState = !currentState
-        val action = if (newState) "enable" else "disable"
+        val actionStr = if (newState) getString(R.string.dialog_stealth_enable)
+                        else getString(R.string.dialog_stealth_disable)
+        val currentStateStr = if (currentState) getString(R.string.dialog_stealth_on)
+                              else getString(R.string.dialog_stealth_off)
 
         AlertDialog.Builder(this)
-            .setTitle("Stealth Mode")
-            .setMessage("Currently: ${if (currentState) "Active" else "Off"}\n\n" +
-                    "Do you want to $action stealth mode?")
-            .setPositiveButton(if (newState) "Enable" else "Disable") { _, _ ->
-                if (newState) {
-                    stealthManager.enableStealthMode()
-                } else {
-                    stealthManager.disableStealthMode()
-                }
+            .setTitle(getString(R.string.dash_stealth_mode))
+            .setMessage(getString(R.string.dialog_stealth_current, currentStateStr) + "\n\n" +
+                    getString(R.string.dialog_stealth_action, actionStr))
+            .setPositiveButton(actionStr) { _, _ ->
+                if (newState) stealthManager.enableStealthMode()
+                else stealthManager.disableStealthMode()
                 refreshStatus()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.dialog_cancel), null)
             .show()
     }
-
-    // ===== Isolation Check =====
 
     private fun runIsolationCheck() {
         lifecycleScope.launch {
             val report = withContext(Dispatchers.IO) { dataGuard.verifyIsolation() }
 
             val message = StringBuilder()
-            message.appendLine("Isolation Report - ${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).format(java.util.Date(report.timestamp))}")
+            message.appendLine("Data Isolation Report")
             message.appendLine("Overall: ${if (report.allPassed) "PASS" else "FAIL"}")
             message.appendLine()
 
@@ -268,69 +226,50 @@ class DashboardActivity : AppCompatActivity() {
             }
 
             AlertDialog.Builder(this@DashboardActivity)
-                .setTitle("Data Isolation Check")
+                .setTitle(getString(R.string.run_isolation_check))
                 .setMessage(message.toString())
-                .setPositiveButton("OK", null)
+                .setPositiveButton(getString(R.string.dialog_ok), null)
                 .show()
 
             refreshStatus()
         }
     }
 
-    // ===== Reset =====
-
     private fun confirmReset() {
         AlertDialog.Builder(this)
-            .setTitle("Reset System")
-            .setMessage("WARNING: This will:\n" +
-                    "1. Remove secondary user and ALL their data\n" +
-                    "2. Clear all settings\n" +
-                    "3. Stop all services\n" +
-                    "4. Un-hide the app\n\n" +
-                    "This action CANNOT be undone!")
-            .setPositiveButton("RESET EVERYTHING") { _, _ ->
-                resetSystem()
-            }
-            .setNegativeButton("Cancel", null)
+            .setTitle(getString(R.string.reset_system))
+            .setMessage(getString(R.string.dash_reset_confirm))
+            .setPositiveButton(getString(R.string.dash_reset_all)) { _, _ -> resetSystem() }
+            .setNegativeButton(getString(R.string.dialog_cancel), null)
             .show()
     }
 
     private fun resetSystem() {
         lifecycleScope.launch {
-            // Stop services
             stopService(Intent(this@DashboardActivity, SystemService::class.java))
             stopService(Intent(this@DashboardActivity, GuardService::class.java))
 
-            // Remove secondary user
             userManager.removeSecondaryUser()
-
-            // Clear preferences
             prefs.resetAll()
-
-            // Show app icon
             stealthManager.disableStealthMode()
-
-            // Clear security logs
             dataGuard.clearSecurityLogs()
 
             SecurityLog.log(this@DashboardActivity, "INFO", "system_reset", "System reset complete")
 
             Toast.makeText(this@DashboardActivity,
-                "System reset complete. Restart app for setup.", Toast.LENGTH_LONG).show()
-
+                getString(R.string.dash_reset_done), Toast.LENGTH_LONG).show()
             finish()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        // Re-enter stealth mode after timeout if stealth is enabled
         if (prefs.isStealthModeEnabled()) {
             android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                 if (!isFinishing && !isDestroyed) {
                     stealthManager.enableStealthMode()
                 }
-            }, 30_000) // Re-hide after 30 seconds
+            }, 30_000)
         }
     }
 }

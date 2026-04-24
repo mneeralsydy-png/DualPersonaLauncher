@@ -94,27 +94,34 @@ class CredentialManager(private val context: Context) {
      * Verify device credential using DevicePolicyManager
      * This checks if the CURRENT user has a valid lock screen credential
      */
+    @SuppressLint("NewApi")
     fun hasDeviceCredential(): Boolean {
-        return devicePolicyManager.isDeviceSecure
-    }
-
-    /**
-     * Get password quality/scheme information
-     */
-    @SuppressLint("NewApi")
-    fun getPasswordQuality(): Int {
-        return devicePolicyManager.passwordQuality
-    }
-
-    /**
-     * Get password constraints information
-     */
-    @SuppressLint("NewApi")
-    fun getPasswordConstraints(): DevicePolicyManager.PasswordConstraints? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            devicePolicyManager.getPasswordConstraints()
-        } else {
+        return try {
+            val method = android.app.admin.DevicePolicyManager::class.java.getMethod("isDeviceSecure")
+            method.invoke(devicePolicyManager) as? Boolean ?: false
+        } catch (e: Exception) {
             @Suppress("DEPRECATION")
+            devicePolicyManager.isActivePasswordSufficient
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    fun getPasswordQuality(): Int {
+        return try {
+            val method = android.app.admin.DevicePolicyManager::class.java.getMethod("getPasswordQuality")
+            method.invoke(devicePolicyManager) as? Int ?: 0
+        } catch (e: Exception) {
+            0
+        }
+    }
+
+    fun getPasswordConstraints(): String? {
+        return if (Build.VERSION.SDK_INT >= 34) {
+            try {
+                val method = android.app.admin.DevicePolicyManager::class.java.getMethod("getPasswordConstraints")
+                method.invoke(devicePolicyManager)?.toString()
+            } catch (e: Exception) { null }
+        } else {
             null
         }
     }
@@ -242,6 +249,7 @@ class CredentialManager(private val context: Context) {
     /**
      * Get or create AES key for encrypting app data
      */
+    @Suppress("DEPRECATION")
     private fun getOrCreateSecretKey(): SecretKey {
         val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
         keyStore.load(null)
@@ -256,18 +264,20 @@ class CredentialManager(private val context: Context) {
             ANDROID_KEYSTORE
         )
 
-        keyGenerator.init(
+        val spec = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             KeyGenParameterSpec.Builder(
                 KEY_ALIAS,
                 KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-            )
-            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-            .setKeySize(256)
-            .setUserAuthenticationRequired(false)
-            .build()
-        )
+            ).setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                .setKeySize(256)
+                .setUserAuthenticationRequired(false)
+                .build()
+        } else {
+            throw UnsupportedOperationException("KeyStore requires API 23+")
+        }
 
+        keyGenerator.init(spec)
         return keyGenerator.generateKey()
     }
 
