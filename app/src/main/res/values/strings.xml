@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ===== Setup Wizard ===== -->
+    <string name="setup_welcome_desc">Transform your phone into two completely separate devices. Each profile has its own apps, data, photos, contacts, and lock screen credential.\n\nWhen you unlock the phone, the system automatically loads the profile that matches your credential. No app launcher needed — full system integration.</string>
+
+    <string name="setup_permissions_title">System Permissions</string>
+    <string name="setup_permissions_desc">Dual Persona System needs special permissions to manage user profiles at the system level.</string>
+
+    <string name="setup_user_a_title">Configure Profile A</string>
+    <string name="setup_user_a_desc">This is your primary profile. You\'ll set its name and lock screen credential through Android\'s security settings.</string>
+
+    <string name="setup_user_b_title">Configure Profile B</string>
+    <string name="setup_user_b_desc">A secondary Android user will be created with a completely separate environment. Each user gets their own storage, apps, and credentials.</string>
+
+    <string name="setup_multi_user_not_supported">Your device doesn\'t support multi-user mode. The app will work in limited mode.</string>
+
+    <string name="setup_security_title">Security Settings</string>
+    <string name="setup_security_desc">Configure advanced security options for maximum protection.</string>
+
+    <string name="setup_complete_title">Setup Complete</string>
+    <string name="setup_complete_desc">Review your configuration before activation.</string>
+
+    <string name="setup_credential_info">Your credential is set through Android\'s system security settings. We never store your actual password or pattern.</string>
+
+    <string name="setup_stealth_info">When enabled, the app completely disappears from your phone. Access it anytime by dialing your secret code on the phone keypad.</string>
+
+    <string name="setup_important_notice">IMPORTANT: Each user sets their own credential through Android Settings > Security. When the system lock screen appears, just enter the credential for the profile you want to access. The system automatically loads the correct profile.</string>
+
+    <string name="setup_success_title">System Activated!</string>
+    <string name="setup_success_message">Dual Persona System is now active.\n\nTo switch profiles:\n1. Lock your phone\n2. Unlock with the other profile\'s credential\n3. The system loads that profile automatically\n\nTo access settings: Dial *#*#7890#*#* on the phone keypad.</string>
+
+    <!-- ===== Button Labels ===== -->
+    <string name="get_started">Get Started</string>
+    <string name="grant_permissions">Grant Permissions</string>
+    <string name="set_and_continue">Set &amp; Continue</string>
+    <string name="create_user_b">Create User B</string>
+    <string name="activate_now">Activate Now</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+
+    <!-- ===== General ===== -->
+    <string name="app_name">System Config</string>
+    <string name="profile_a">Profile A</string>
+    <string name="profile_b">Profile B</string>
+    <string name="secret_code_hint">Dial *#*#CODE#*#*</string>
+
+    <!-- ===== Dashboard ===== -->
+    <string name="dashboard_title">Dual Persona Control Panel</string>
+    <string name="dashboard_accessed_via">Accessed via secret code</string>
+    <string name="isolation_secure">Data Isolation: Secure</string>
+    <string name="isolation_warning">Data Isolation: Check Failed</string>
+    <string name="services_running">Services: Running</string>
+    <string name="services_stopped">Services: Stopped</string>
+    <string name="stealth_active">Stealth: Active</string>
+    <string name="stealth_off">Stealth: Off</string>
+    <string name="switch_to_profile_b">Switch to Profile B</string>
+    <string name="switch_to_profile_a">Switch to Profile A</string>
+    <string name="view_security_logs">View Security Logs</string>
+    <string name="change_secret_code">Change Secret Code</string>
+    <string name="toggle_stealth">Toggle Stealth Mode</string>
+    <string name="run_isolation_check">Run Isolation Check</string>
+    <string name="refresh_status">Refresh Status</string>
+    <string name="reset_system">Reset System</string>
+    <string name="reset_warning">WARNING: This will remove the secondary user and ALL their data. This action CANNOT be undone.</string>
+
+    <!-- ===== Notifications ===== -->
+    <string name="notification_system_title">Dual Persona System</string>
+    <string name="notification_system_text">System active — managing dual profiles</string>
+    <string name="notification_guard_title">Security Guard</string>
+    <string name="notification_guard_text">Monitoring data isolation</string>
+    <string name="notification_alert_title">Security Alert</string>
+    <string name="notification_alert_text">Suspicious activity detected</string>
+</resources>

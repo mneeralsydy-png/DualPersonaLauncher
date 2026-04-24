@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_primary">#0D1117</color>
+    <color name="bg_card">#161B22</color>
+    <color name="bg_card_hover">#1C2128</color>
+    <color name="primary">#58A6FF</color>
+    <color name="primary_dark">#1F6FEB</color>
+    <color name="accent">#7C3AED</color>
+    <color name="accent_light">#A78BFA</color>
+    <color name="danger">#F85149</color>
+    <color name="danger_dark">#DA3633</color>
+    <color name="warning">#D29922</color>
+    <color name="success">#3FB950</color>
+    <color name="text_primary">#E6EDF3</color>
+    <color name="text_secondary">#8B949E</color>
+    <color name="text_hint">#484F58</color>
+    <color name="divider">#30363D</color>
+    <color name="surface">#21262D</color>
+    <color name="stealth_bg">#000000</color>
+</resources>

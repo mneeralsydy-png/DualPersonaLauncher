@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="setup_welcome_desc">حوّل هاتفك إلى جهازين منفصلين تماماً. كل ملف تعريف (Profile) له تطبيقاته وبياناته وصوره وجهات اتصاله وكلمة مرور القفل الخاصة به.\n\nعند فتح القفل، يحمّل النظام تلقائياً الملف الشخصي الذي يتوافق مع بيانات الاعتماد الخاصة بك. لا حاجة لمشغل تطبيقات — دمج كامل مع النظام.</string>
+    <string name="setup_permissions_title">صلاحيات النظام</string>
+    <string name="setup_permissions_desc">يحتاج نظام الهوية المزدوجة إلى صلاحيات خاصة لإدارة ملفات المستخدمين على مستوى النظام.</string>
+    <string name="setup_user_a_title">تكوين الملف الشخصي A</string>
+    <string name="setup_user_a_desc">هذا هو ملفك الشخصي الأساسي. ستقوم بتعيين اسمه وبيانات اعتماد شاشة القفل من خلال إعدادات الأمان في Android.</string>
+    <string name="setup_user_b_title">تكوين الملف الشخصي B</string>
+    <string name="setup_user_b_desc">سيتم إنشاء مستخدم Android ثانوي ببيئة منفصلة تماماً. كل مستخدم يحصل على تخزين وتطبيقات وبيانات اعتماد خاصة به.</string>
+    <string name="setup_multi_user_not_supported">جهازك لا يدعم وضع المستخدمين المتعددين. سيعمل التطبيق في وضع محدود.</string>
+    <string name="setup_security_title">إعدادات الأمان</string>
+    <string name="setup_security_desc">تكوين خيارات الأمان المتقدمة للحماية القصوى.</string>
+    <string name="setup_complete_title">اكتمال الإعداد</string>
+    <string name="setup_complete_desc">راجع التكوين الخاص بك قبل التفعيل.</string>
+    <string name="setup_credential_info">يتم تعيين بيانات الاعتماد الخاصة بك من خلال إعدادات الأمان في Android. لا نخزن كلمة المرور أو النمط الفعلي أبداً.</string>
+    <string name="setup_stealth_info">عند التمكين، يختفي التطبيق تماماً من هاتفك. يمكنك الوصول إليه في أي وقت عن طريق طلب الرمز السري على لوحة مفاتيح الهاتف.</string>
+    <string name="setup_important_notice">مهم: يقوم كل مستخدم بتعيين بيانات اعتماده الخاصة من خلال إعدادات الأمان > الأمان في Android. عند ظهور شاشة قفل النظام، أدخل بيانات الاعتماد للملف الشخصي الذي تريد الوصول إليه. يقوم النظام تلقائياً بتحميل الملف الشخصي الصحيح.</string>
+    <string name="setup_success_title">تم تفعيل النظام!</string>
+    <string name="setup_success_message">نظام الهوية المزدوجة نشط الآن.\n\nللتبديل بين الملفات الشخصية:\n1. اقفل هاتفك\n2. افتح القفل ببيانات اعتماد الملف الشخصي الآخر\n3. يقوم النظام بتحميل الملف الشخصي تلقائياً\n\nللوصول إلى الإعدادات: اطلب *#*#7890#*#* على لوحة مفاتيح الهاتف.</string>
+    <string name="get_started">ابدأ</string>
+    <string name="grant_permissions">منح الصلاحيات</string>
+    <string name="set_and_continue">تعيين ومتابعة</string>
+    <string name="create_user_b">إنشاء المستخدم B</string>
+    <string name="activate_now">تفعيل الآن</string>
+    <string name="next">التالي</string>
+    <string name="skip">تخطي</string>
+    <string name="app_name">إعدادات النظام</string>
+    <string name="profile_a">الملف الشخصي A</string>
+    <string name="profile_b">الملف الشخصي B</string>
+</resources>
