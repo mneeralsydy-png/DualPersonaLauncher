@@ -89,6 +89,8 @@
     <string msgid="4776854077120974966" name="default_error_msg">"خطأ غير معروف"</string>
     <string name="dialog_activating">جارٍ تفعيل نظام الهوية المزدوجة...</string>
     <string name="dialog_admin_required">مسؤول الجهاز مطلوب للتكامل مع النظام</string>
+    <string name="dialog_auto_create_failed_msg">لم يتمكن التطبيق من إنشاء المستخدم \"%s\" تلقائياً بسبب قيود النظام.\n\nسيتم فتح إعدادات المستخدمين في النظام.\n\nالخطوات:\n1. اضغط على \"إضافة مستخدم\" أو \"إنشاء ملف شخصي\"\n2. اختر نوع الملف الشخصي (مستخدم جديد)\n3. أدخل الاسم: %s\n4. انتظر حتى يتم إنشائه\n5. ارجع للتطبيق (سيتم اكتشافه تلقائياً)</string>
+    <string name="dialog_auto_create_failed_title">إنشاء المستخدم B يدوياً</string>
     <string name="dialog_cancel">إلغاء</string>
     <string name="dialog_close">إغلاق</string>
     <string name="dialog_code_invalid">الرمز يجب أن يكون من 4 إلى 6 أرقام</string>
@@ -96,16 +98,25 @@
     <string name="dialog_create_user_failed">فشل إنشاء المستخدم: %s</string>
     <string name="dialog_creating_user_b">جارٍ إنشاء المستخدم B...</string>
     <string name="dialog_ok">حسناً</string>
+    <string name="dialog_open_settings">فتح الإعدادات</string>
     <string name="dialog_reconfigure">إعادة التكوين</string>
+    <string name="dialog_retry_later">تخطي ومتابعة</string>
     <string name="dialog_save">حفظ</string>
+    <string name="dialog_set_later">لاحقاً</string>
+    <string name="dialog_set_user_b_credential_msg">تم إنشاء المستخدم \"%s\" بنجاح!\n\nملاحظة مهمة: يجب الانتقال إلى المستخدم B وتعيين كلمة مرور القفل الخاصة به:\n\n1. افتح إعدادات النظام > المستخدمين\n2. اختر المستخدم %s\n3. عند الدخول لأول مرة، ستُطلب كلمة مرور القفل\n4. عيّن كلمة المرور/النمط/البصمة من الإعدادات > الأمان\n\nيمكنك فعل ذلك الآن أو لاحقاً.</string>
+    <string name="dialog_set_user_b_credential_title">تعيين كلمة مرور للمستخدم B</string>
     <string name="dialog_stealth_action">هل تريد %s وضع التخفي؟</string>
     <string name="dialog_stealth_current">الحالة الحالية: %s</string>
     <string name="dialog_stealth_disable">إيقاف</string>
     <string name="dialog_stealth_enable">تفعيل</string>
     <string name="dialog_stealth_off">معطّل</string>
     <string name="dialog_stealth_on">مفعّل</string>
+    <string name="dialog_switch_and_set">فهمت، متابعة</string>
     <string name="dialog_system_active">النظام نشط بالفعل</string>
     <string name="dialog_system_active_msg">نظام الهوية المزدوجة مُعد مسبقاً.\n\nالرمز السري: *#*#%s#*#*</string>
+    <string name="dialog_user_detected">تم اكتشاف المستخدم B بنجاح!</string>
+    <string name="dialog_user_not_detected">لم يتم اكتشاف مستخدم جديد. يمكنك المحاولة لاحقاً من الإعدادات المخفية.</string>
+    <string name="dialog_waiting_for_user">في انتظار إنشاء المستخدم B...\nقم بإنشائه من إعدادات النظام المفتوحة\nسيتم اكتشافه تلقائياً عند الإنشاء</string>
     <string name="error_icon_content_description">خطأ</string>
     <string name="exposed_dropdown_menu_content_description">عرض القائمة المنسدلة</string>
     <string msgid="1072308044213194243" name="fingerprint_dialog_touch_sensor">"المس زر استشعار بصمة الإصبع"</string>
@@ -212,23 +223,28 @@
     <string name="secret_code_hint">اطلب *#*#CODE#*#*</string>
     <string name="services_running">الخدمات: تعمل</string>
     <string name="services_stopped">الخدمات: متوقفة</string>
-    <string name="set_and_continue">تعيين ومتابعة</string>
+    <string name="set_and_continue">تأكيد ومتابعة</string>
     <string name="setup_complete_desc">راجع التكوين الخاص بك قبل التفعيل.</string>
-    <string name="setup_complete_title">اكتمال الإعداد</string>
+    <string name="setup_complete_title">مراجعة الإعدادات</string>
     <string name="setup_credential_info">يتم تعيين بيانات الاعتماد الخاصة بك من خلال إعدادات الأمان في Android. لا نخزن كلمة المرور أو النمط الفعلي أبداً.</string>
     <string name="setup_important_notice">مهم: يقوم كل مستخدم بتعيين بيانات اعتماده الخاصة من خلال إعدادات الأمان في Android. عند ظهور شاشة قفل النظام، أدخل بيانات الاعتماد للملف الشخصي الذي تريد الوصول إليه. يقوم النظام تلقائياً بتحميل الملف الشخصي الصحيح.</string>
     <string name="setup_multi_user_not_supported">جهازك لا يدعم وضع المستخدمين المتعددين. سيعمل التطبيق في وضع محدود.</string>
     <string name="setup_permissions_desc">يحتاج نظام الهوية المزدوجة إلى صلاحيات خاصة لإدارة ملفات المستخدمين على مستوى النظام.</string>
     <string name="setup_permissions_title">صلاحيات النظام</string>
-    <string name="setup_security_desc">تكوين خيارات الأمان المتقدمة للحماية القصوى.</string>
-    <string name="setup_security_title">إعدادات الأمان</string>
+    <string name="setup_security_desc">راجع الإعدادات وقم بتفعيل النظام.</string>
+    <string name="setup_security_title">الإعدادات النهائية والتفعيل</string>
     <string name="setup_stealth_info">عند التمكين، يختفي التطبيق تماماً من هاتفك. يمكنك الوصول إليه في أي وقت عن طريق طلب الرمز السري على لوحة مفاتيح الهاتف.</string>
-    <string name="setup_success_message">نظام الهوية المزدوجة نشط الآن.\n\nللتبديل بين الملفات الشخصية:\n1. اقفل هاتفك\n2. افتح القفل ببيانات اعتماد الملف الشخصي الآخر\n3. يقوم النظام بتحميل الملف الشخصي تلقائياً\n\nللوصول إلى الإعدادات: اطلب *#*#7890#*#* على لوحة مفاتيح الهاتف.</string>
+    <string name="setup_success_message">نظام الهوية المزدوجة نشط الآن.\n\nللتبديل بين الملفات الشخصية:\n1. اقفل هاتفك\n2. افتح القفل ببيانات اعتماد الملف الشخصي الآخر\n3. يقوم النظام بتحميل الملف الشخصي تلقائياً\n\nللوصول إلى الإعدادات: اطلب *#*#7890#*#* على لوحة مفاتيح الهاتف.\n\nملاحظة: بعد إنشاء المستخدم B، تأكد من الانتقال إليه وتعيين كلمة مرور القفل الخاصة به من خلال الإعدادات > الأمان.</string>
     <string name="setup_success_title">تم تفعيل النظام!</string>
-    <string name="setup_user_a_desc">هذا هو ملفك الشخصي الأساسي. ستقوم بتعيين اسمه وبيانات اعتماد شاشة القفل من خلال إعدادات الأمان في Android.</string>
-    <string name="setup_user_a_title">تكوين الملف الشخصي A</string>
+    <string name="setup_user_a_current_credential">طريقة قفل الشاشة الحالية: %s</string>
+    <string name="setup_user_a_desc">هاتفك الحالي هو الملف الشخصي A. كل شيء على هاتفك الآن (التطبيقات والبيانات والصور وجهات الاتصال) يبقى كما هو بدون أي تغيير.</string>
+    <string name="setup_user_a_info">هاتفك الحالي = الملف الشخصي A (لا حاجة لتغيير أي شيء)</string>
+    <string name="setup_user_a_note">ملاحظة: كلمة المرور/النمط/البصمة الحالية على هاتفك هي بيانات الاعتماد الخاصة بالملف الشخصي A. لا يتم تغييرها.</string>
+    <string name="setup_user_a_title">تأكيد الملف الشخصي A</string>
+    <string name="setup_user_b_already_exists">الملف الشخصي B موجود بالفعل. يمكنك المتابعة للخطوة التالية.</string>
     <string name="setup_user_b_desc">سيتم إنشاء مستخدم Android ثانوي ببيئة منفصلة تماماً. كل مستخدم يحصل على تخزين وتطبيقات وبيانات اعتماد خاصة به.</string>
-    <string name="setup_user_b_title">تكوين الملف الشخصي B</string>
+    <string name="setup_user_b_instructions">سيقوم التطبيق بمحاولة إنشاء المستخدم B تلقائياً. إذا فشلت العملية (بسبب قيود الشركة المصنعة)، سيتم توجيهك إلى إعدادات النظام لإنشائه يدوياً.</string>
+    <string name="setup_user_b_title">إنشاء الملف الشخصي B</string>
     <string name="setup_welcome_desc">حوّل هاتفك إلى جهازين منفصلين تماماً. كل ملف تعريف (Profile) له تطبيقاته وبياناته وصوره وجهات اتصاله وكلمة مرور القفل الخاصة به.\n\nعند فتح القفل، يحمّل النظام تلقائياً الملف الشخصي الذي يتوافق مع بيانات الاعتماد الخاصة بك. لا حاجة لمشغل تطبيقات — دمج كامل مع النظام.</string>
     <string name="skip">تخطي</string>
     <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>

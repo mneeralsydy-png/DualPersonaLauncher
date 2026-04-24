@@ -2,14 +2,17 @@ package com.dualpersona.system.core
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.UserHandle
 import android.os.UserManager
+import android.provider.Settings
 import com.dualpersona.system.data.PreferencesManager
 import com.dualpersona.system.data.SecurityLog
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.lang.reflect.Method
 
@@ -20,19 +23,158 @@ class SystemUserManager(private val context: Context) {
 
     private val prefs: PreferencesManager = PreferencesManager(context)
 
-    // ===== User Management (using reflection for hidden APIs) =====
+    // ===== Get existing users count before creation =====
+    private var usersBeforeCreation: Int = 0
 
+    // ===== User Management =====
+
+    /**
+     * Try to create secondary user via hidden API.
+     * Falls back to guiding user to system settings.
+     */
     fun createSecondaryUser(userName: String): Result<UserHandle> = runCatching {
-        val method: Method = UserManager::class.java.getMethod("createUser", String::class.java, Int::class.javaPrimitiveType)
-        val userHandle = method.invoke(userManager, userName, 0) as? UserHandle
-            ?: throw IllegalStateException("Failed to create secondary user")
+        usersBeforeCreation = getUserCount()
 
-        val serial = getSerialNumberForUser(userHandle)
-        prefs.setSecondaryUserHandleId(serial)
-        prefs.setSecondaryUserName(userName)
+        // Method 1: Try hidden API createUser
+        try {
+            val method: Method = UserManager::class.java.getMethod(
+                "createUser", String::class.java, Int::class.javaPrimitiveType
+            )
+            val flags = 0
+            val userHandle = method.invoke(userManager, userName, flags) as? UserHandle
+            if (userHandle != null) {
+                val serial = getSerialNumberForUser(userHandle)
+                prefs.setSecondaryUserHandleId(serial)
+                prefs.setSecondaryUserName(userName)
+                SecurityLog.log(context, "SUCCESS", "create_user",
+                    "Secondary user created via hidden API: $userName")
+                return@runCatching userHandle
+            }
+        } catch (e: Exception) {
+            SecurityLog.log(context, "WARNING", "create_user_hidden_api",
+                "Hidden API failed: ${e.message}")
+        }
 
-        SecurityLog.log(context, "SUCCESS", "create_user", "Secondary user created: $userName")
-        userHandle
+        // Method 2: Try DevicePolicyManager (if app is device owner)
+        try {
+            val dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as? android.app.admin.DevicePolicyManager
+            if (dpm != null && dpm.isDeviceOwnerApp(context.packageName)) {
+                val method = android.app.admin.DevicePolicyManager::class.java.getMethod(
+                    "createAndManageUser",
+                    String::class.java,
+                    String::class.java,
+                    android.content.ComponentName::class.java,
+                    android.os.PersistableBundle::class.java,
+                    Int::class.javaPrimitiveType
+                )
+                val componentName = android.content.ComponentName(
+                    context,
+                    com.dualpersona.system.receiver.DualPersonaAdmin::class.java
+                )
+                val userHandle = method.invoke(
+                    dpm, userName, userName, componentName, null,
+                    android.app.admin.DevicePolicyManager.SKIP_SETUP_WIZARD
+                ) as? UserHandle
+
+                if (userHandle != null) {
+                    val serial = getSerialNumberForUser(userHandle)
+                    prefs.setSecondaryUserHandleId(serial)
+                    prefs.setSecondaryUserName(userName)
+                    SecurityLog.log(context, "SUCCESS", "create_user_dpm",
+                        "Secondary user created via DevicePolicyManager: $userName")
+                    return@runCatching userHandle
+                }
+            }
+        } catch (e: Exception) {
+            SecurityLog.log(context, "WARNING", "create_user_dpm",
+                "DPM method failed: ${e.message}")
+        }
+
+        throw IllegalStateException("AUTO_CREATE_FAILED")
+    }
+
+    /**
+     * Open system User Settings so the user can manually create a second profile.
+     * After creation, call detectNewSecondaryUser() to pick it up.
+     */
+    fun openUserSettings() {
+        try {
+            val intent = Intent("android.settings.USER_SETTINGS").apply {
+                this.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(intent)
+            SecurityLog.log(context, "INFO", "open_user_settings", "Opened system user settings")
+        } catch (e: Exception) {
+            try {
+                val intent = Intent("android.settings.USER_CREATE_SETTINGS").apply {
+                    this.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            } catch (e2: Exception) {
+                SecurityLog.log(context, "ERROR", "open_user_settings",
+                    "Failed to open settings: ${e2.message}")
+            }
+        }
+    }
+
+    /**
+     * Poll for a newly created user.
+     * Call this after the user creates a user via system settings.
+     * Returns the UserHandle if found within timeout.
+     */
+    suspend fun detectNewSecondaryUser(
+        timeoutMs: Long = 120_000,
+        pollIntervalMs: Long = 2_000
+    ): Result<UserHandle> = withContext(Dispatchers.IO) {
+        val startTime = System.currentTimeMillis()
+
+        while (System.currentTimeMillis() - startTime < timeoutMs) {
+            val allUsers = getAllUsers()
+            // Look for users that weren't there before
+            for (userInfo in allUsers) {
+                val id = userInfo["id"] as? Int ?: -1
+                val name = userInfo["name"] as? String ?: ""
+                val isGuest = userInfo["isGuest"] as? Boolean ?: false
+
+                // Skip current user (id=0), system, and guests
+                if (id > 0 && !isGuest) {
+                    try {
+                        val handle = getUserHandleForId(id)
+                        val serial = getSerialNumberForUser(handle)
+                        prefs.setSecondaryUserHandleId(serial)
+                        prefs.setSecondaryUserName(name.ifBlank { "User B" })
+                        SecurityLog.log(context, "SUCCESS", "detect_user",
+                            "Detected new user: $name (id=$id)")
+                        return@withContext Result.success(handle)
+                    } catch (e: Exception) {
+                        // continue checking
+                    }
+                }
+            }
+
+            delay(pollIntervalMs)
+        }
+
+        Result.failure(java.lang.IllegalStateException("TIMEOUT: No new user detected"))
+    }
+
+    /**
+     * Find any existing secondary user (non-owner, non-guest)
+     */
+    fun findExistingSecondaryUser(): UserHandle? {
+        return try {
+            val allUsers = getAllUsers()
+            for (userInfo in allUsers) {
+                val id = userInfo["id"] as? Int ?: -1
+                val isGuest = userInfo["isGuest"] as? Boolean ?: false
+                if (id > 0 && !isGuest) {
+                    return getUserHandleForId(id)
+                }
+            }
+            null
+        } catch (e: Exception) {
+            null
+        }
     }
 
     fun removeSecondaryUser(): Result<Unit> = runCatching {
@@ -97,7 +239,7 @@ class SystemUserManager(private val context: Context) {
     }
 
     fun hasSecondaryUser(): Boolean {
-        return getSecondaryUserInfo() != null
+        return getSecondaryUserInfo() != null || findExistingSecondaryUser() != null
     }
 
     // ===== User Restrictions =====
@@ -136,11 +278,25 @@ class SystemUserManager(private val context: Context) {
         }
     }
 
+    /**
+     * Check if MANAGE_USERS permission is available (system app only)
+     */
+    fun hasManageUsersPermission(): Boolean {
+        return try {
+            val method: Method = UserManager::class.java.getMethod("supportsMultipleUsers")
+            true // If we can access hidden API, we might have permission
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     // ===== Reflection Helpers =====
 
     private fun getSerialNumberForUser(handle: UserHandle): Long {
         return try {
-            val method: Method = UserManager::class.java.getMethod("getSerialNumberForUser", UserHandle::class.java)
+            val method: Method = UserManager::class.java.getMethod(
+                "getSerialNumberForUser", UserHandle::class.java
+            )
             method.invoke(userManager, handle) as? Long ?: -1
         } catch (e: Exception) { -1 }
     }
@@ -159,7 +315,9 @@ class SystemUserManager(private val context: Context) {
 
     private fun getUserIdFromSerial(serial: Long): Int {
         return try {
-            val method: Method = UserManager::class.java.getMethod("getUserForSerialNumber", Long::class.javaPrimitiveType)
+            val method: Method = UserManager::class.java.getMethod(
+                "getUserForSerialNumber", Long::class.javaPrimitiveType
+            )
             val handle = method.invoke(userManager, serial) as? UserHandle ?: return -1
             getUserId(handle)
         } catch (e: Exception) { -1 }
@@ -170,12 +328,20 @@ class SystemUserManager(private val context: Context) {
     }
 
     fun getSecondaryUserHandle(): UserHandle? {
+        // First check stored serial
         val serial = prefs.getSecondaryUserHandleId()
-        if (serial == -1L) return null
-        return try {
-            val method: Method = UserManager::class.java.getMethod("getUserForSerialNumber", Long::class.javaPrimitiveType)
-            method.invoke(userManager, serial) as? UserHandle
-        } catch (e: Exception) { null }
+        if (serial != -1L) {
+            try {
+                val method: Method = UserManager::class.java.getMethod(
+                    "getUserForSerialNumber", Long::class.javaPrimitiveType
+                )
+                val handle = method.invoke(userManager, serial) as? UserHandle
+                if (handle != null) return handle
+            } catch (e: Exception) { }
+        }
+
+        // Fallback: find any secondary user
+        return findExistingSecondaryUser()
     }
 
     // ===== Async helpers =====
