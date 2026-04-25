@@ -3,29 +3,20 @@ package com.dualpersona.system.service
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import com.dualpersona.system.DualPersonaApp
 import com.dualpersona.system.R
-import com.dualpersona.system.core.DataGuard
-import com.dualpersona.system.core.SystemUserManager
+import com.dualpersona.system.core.StealthManager
 import com.dualpersona.system.data.PreferencesManager
 import com.dualpersona.system.data.SecurityLog
 import kotlinx.coroutines.*
 
 /**
- * SystemService - Main background service
+ * SystemService - خدمة النظام الرئيسية
  *
- * Core responsibilities:
- * - Monitors user state changes
- * - Manages user profile configurations
- * - Ensures services stay running
- * - Handles periodic maintenance tasks
- * - Coordinates between SystemUserManager and DataGuard
- *
- * Runs as a foreground service with a persistent notification.
+ * آمنة 100% - لا تستخدم أي API مخفي.
  */
 class SystemService : Service() {
 
@@ -39,15 +30,18 @@ class SystemService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForegroundNotification()
+        try {
+            startForegroundNotification()
 
-        val prefs = PreferencesManager(this)
-        prefs.setServiceStarted(true)
+            val prefs = PreferencesManager(this)
+            prefs.setServiceStarted(true)
 
-        // Start monitoring
-        startMonitoring()
+            startMonitoring()
+        } catch (e: Exception) {
+            SecurityLog.log(this, "ERROR", "system_service", "Start error: ${e.message}")
+        }
 
-        return START_STICKY // Restart if killed
+        return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -56,11 +50,11 @@ class SystemService : Service() {
         super.onDestroy()
         isRunning = false
         serviceScope.cancel()
-        PreferencesManager(this).setServiceStarted(false)
+        try {
+            PreferencesManager(this).setServiceStarted(false)
+        } catch (e: Exception) {}
         SecurityLog.log(this, "INFO", "system_service", "System service destroyed")
     }
-
-    // ===== Foreground Notification =====
 
     private fun startForegroundNotification() {
         val notification = createNotification()
@@ -100,33 +94,27 @@ class SystemService : Service() {
         }
     }
 
-    // ===== Monitoring Loop =====
-
     private fun startMonitoring() {
-        val prefs = PreferencesManager(this)
-        val userManager = SystemUserManager(this)
-
-        // Periodic status check (every 30 seconds)
         serviceScope.launch {
             while (isRunning && isActive) {
                 try {
-                    // Verify secondary user exists
-                    if (prefs.isSetupComplete() && !userManager.hasSecondaryUser()) {
-                        SecurityLog.log(this@SystemService, "WARNING", "monitor",
-                            "Secondary user missing - may have been removed")
+                    val prefs = PreferencesManager(this@SystemService)
+
+                    // التحقق من وضع التخفي
+                    if (prefs.isSetupComplete()) {
+                        try {
+                            val stealthManager = StealthManager(this@SystemService)
+                            if (prefs.isStealthModeEnabled() && stealthManager.isIconVisible()) {
+                                stealthManager.enableStealthMode()
+                            }
+                        } catch (e: Exception) {
+                            // تجاهل خطأ التخفي
+                        }
                     }
 
-                    // Check stealth mode consistency
-                    val stealthManager = com.dualpersona.system.core.StealthManager(this@SystemService)
-                    if (prefs.isStealthModeEnabled() && stealthManager.isIconVisible()) {
-                        stealthManager.enableStealthMode()
-                    }
-
-                    delay(30_000) // 30 second interval
+                    delay(30_000)
                 } catch (e: Exception) {
-                    SecurityLog.log(this@SystemService, "ERROR", "monitor",
-                        "Monitor error: ${e.message}")
-                    delay(60_000) // Back off on error
+                    delay(60_000)
                 }
             }
         }

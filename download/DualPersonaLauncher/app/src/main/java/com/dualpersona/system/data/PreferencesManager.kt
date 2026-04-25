@@ -30,6 +30,7 @@ class PreferencesManager(context: Context) {
         private const val KEY_PROFILE_NAME_1 = "profile_name_1" // User B
         private const val KEY_SECONDARY_USER_HANDLE = "secondary_user_handle"
         private const val KEY_SECONDARY_USER_NAME = "secondary_user_name"
+        private const val KEY_SECONDARY_USER_CONFIRMED = "secondary_user_confirmed"
 
         // Keys - Credentials
         private const val KEY_CRED_TYPE_0 = "cred_type_0"
@@ -111,9 +112,14 @@ class PreferencesManager(context: Context) {
 
     fun setSecondaryUserName(name: String) = prefs.edit().putString(KEY_SECONDARY_USER_NAME, name).apply()
     fun getSecondaryUserName(): String? = prefs.getString(KEY_SECONDARY_USER_NAME, null)
+
+    fun isSecondaryUserConfirmed(): Boolean = prefs.getBoolean(KEY_SECONDARY_USER_CONFIRMED, false)
+    fun setSecondaryUserConfirmed(confirmed: Boolean) = prefs.edit().putBoolean(KEY_SECONDARY_USER_CONFIRMED, confirmed).apply()
+
     fun clearSecondaryUser() = prefs.edit()
         .remove(KEY_SECONDARY_USER_HANDLE)
         .remove(KEY_SECONDARY_USER_NAME)
+        .remove(KEY_SECONDARY_USER_CONFIRMED)
         .apply()
 
     // ===== Credentials =====

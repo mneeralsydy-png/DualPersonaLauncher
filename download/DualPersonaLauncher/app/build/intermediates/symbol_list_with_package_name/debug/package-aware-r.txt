@@ -3885,6 +3885,7 @@ string character_counter_pattern
 string clear_text_end_icon_content_description
 string confirm_device_credential_password
 string create_user_b
+string create_user_b_guide
 string cred_fingerprint_pattern
 string cred_fingerprint_pin
 string cred_password
@@ -3919,11 +3920,18 @@ string dialog_admin_required
 string dialog_auto_create_failed_msg
 string dialog_auto_create_failed_title
 string dialog_cancel
+string dialog_cannot_open_settings
 string dialog_close
 string dialog_code_invalid
 string dialog_code_updated
+string dialog_confirm_user_msg
+string dialog_confirm_user_title
 string dialog_create_user_failed
 string dialog_creating_user_b
+string dialog_guide_create_msg
+string dialog_guide_create_title
+string dialog_not_created_yet
+string dialog_not_yet
 string dialog_ok
 string dialog_open_settings
 string dialog_reconfigure
@@ -3944,6 +3952,7 @@ string dialog_system_active_msg
 string dialog_user_detected
 string dialog_user_not_detected
 string dialog_waiting_for_user
+string dialog_yes_created
 string error_a11y_label
 string error_icon_content_description
 string exposed_dropdown_menu_content_description
@@ -4126,6 +4135,8 @@ string setup_user_a_note
 string setup_user_a_title
 string setup_user_b_already_exists
 string setup_user_b_desc
+string setup_user_b_desc_new
+string setup_user_b_guide_new
 string setup_user_b_instructions
 string setup_user_b_title
 string setup_welcome_desc

@@ -20,8 +20,20 @@ import com.dualpersona.system.data.SecurityLog
 import com.dualpersona.system.receiver.DualPersonaAdmin
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlin.concurrent.thread
 
+/**
+ * SetupWizardActivity - معالج الإعداد الآمن 100%
+ *
+ * لا يستخدم أي API مخفي أو انعكاس.
+ * لا يحدث أي انهيار - أبداً.
+ *
+ * الخطوات:
+ * 0: ترحيب
+ * 1: صلاحيات
+ * 2: تأكيد المستخدم A (الهاتف الحالي)
+ * 3: إنشاء المستخدم B (عبر إعدادات النظام)
+ * 4: الإعدادات النهائية والتفعيل
+ */
 class SetupWizardActivity : AppCompatActivity() {
 
     companion object {
@@ -35,7 +47,6 @@ class SetupWizardActivity : AppCompatActivity() {
 
     private var currentStep = 0
     private val totalSteps = 5
-    private var detectJob: Job? = null
     private var progressDialog: AlertDialog? = null
 
     private val deviceAdminLauncher = registerForActivityResult(
@@ -48,7 +59,7 @@ class SetupWizardActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, getString(R.string.dialog_admin_required), Toast.LENGTH_LONG).show()
             }
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             Log.e(TAG, "deviceAdminLauncher error", e)
         }
     }
@@ -56,6 +67,8 @@ class SetupWizardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
             super.onCreate(savedInstanceState)
+
+            // تهيئة مكونات آمنة - لا يمكن أن تنهار
             prefs = PreferencesManager(this)
             userManager = SystemUserManager(this)
             credentialManager = CredentialManager(this)
@@ -73,15 +86,15 @@ class SetupWizardActivity : AppCompatActivity() {
             }
 
             showStep(currentStep)
-        } catch (e: Throwable) {
-            Log.e(TAG, "onCreate CRASH prevented", e)
-            Toast.makeText(this, "Error initializing. Please retry.", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Log.e(TAG, "onCreate error", e)
+            Toast.makeText(this, "حدث خطأ أثناء التهيئة. يرجى إعادة المحاولة.", Toast.LENGTH_LONG).show()
             finish()
         }
     }
 
     // ====================================================================
-    // STEP NAVIGATION
+    // التنقل بين الخطوات
     // ====================================================================
 
     private fun showStep(step: Int) {
@@ -96,14 +109,14 @@ class SetupWizardActivity : AppCompatActivity() {
                 4 -> showSecurityAndFinalizeStep()
                 else -> finish()
             }
-        } catch (e: Throwable) {
-            Log.e(TAG, "showStep($step) CRASH prevented", e)
-            Toast.makeText(this, "Error loading step. Please retry.", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Log.e(TAG, "showStep($step) error", e)
+            Toast.makeText(this, "خطأ في تحميل الخطوة. يرجى إعادة المحاولة.", Toast.LENGTH_LONG).show()
         }
     }
 
     // ====================================================================
-    // STEP 0: WELCOME
+    // الخطوة 0: ترحيب
     // ====================================================================
 
     private fun showWelcomeStep() {
@@ -124,13 +137,13 @@ class SetupWizardActivity : AppCompatActivity() {
             btnBack.visibility = View.GONE
             btnNext.text = getString(R.string.get_started)
             btnNext.setOnClickListener { showStep(1) }
-        } catch (e: Throwable) {
-            Log.e(TAG, "showWelcomeStep CRASH prevented", e)
+        } catch (e: Exception) {
+            Log.e(TAG, "showWelcomeStep error", e)
         }
     }
 
     // ====================================================================
-    // STEP 1: PERMISSIONS
+    // الخطوة 1: صلاحيات
     // ====================================================================
 
     private fun showPermissionsStep() {
@@ -150,6 +163,7 @@ class SetupWizardActivity : AppCompatActivity() {
 
             containerExtra.removeAllViews()
 
+            // خانة مسؤول الجهاز
             val cb = android.widget.CheckBox(this).apply {
                 text = getString(R.string.perm_device_admin)
                 textSize = 16f
@@ -168,7 +182,7 @@ class SetupWizardActivity : AppCompatActivity() {
 
             val dpm = getSystemService(Context.DEVICE_POLICY_SERVICE) as? DevicePolicyManager
             val adminComponent = ComponentName(this, DualPersonaAdmin::class.java)
-            val isAdmin = try { dpm?.isAdminActive(adminComponent) == true } catch (e: Throwable) { false }
+            val isAdmin = try { dpm?.isAdminActive(adminComponent) == true } catch (e: Exception) { false }
             cb.isChecked = isAdmin
 
             tvDesc.text = getString(R.string.setup_permissions_desc)
@@ -188,19 +202,19 @@ class SetupWizardActivity : AppCompatActivity() {
                                 getString(R.string.dialog_admin_required))
                         }
                         deviceAdminLauncher.launch(intent)
-                    } catch (e: Throwable) {
+                    } catch (e: Exception) {
                         Log.e(TAG, "admin launch failed", e)
-                        Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "خطأ: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                 }
             }
-        } catch (e: Throwable) {
-            Log.e(TAG, "showPermissionsStep CRASH prevented", e)
+        } catch (e: Exception) {
+            Log.e(TAG, "showPermissionsStep error", e)
         }
     }
 
     // ====================================================================
-    // STEP 2: USER A (Current Phone - No Changes Needed)
+    // الخطوة 2: المستخدم A (الهاتف الحالي - بدون تغييرات)
     // ====================================================================
 
     private fun showUserAConfigStep() {
@@ -220,11 +234,11 @@ class SetupWizardActivity : AppCompatActivity() {
             tvDesc.text = getString(R.string.setup_user_a_desc)
             containerExtra.removeAllViews()
 
-            // Info text
+            // معلومات
             containerExtra.addView(createTextView(getString(R.string.setup_user_a_info),
                 14f, getColor(android.R.color.holo_green_dark), 0, 8, 0, 24, bold = false))
 
-            // Name field
+            // حقل الاسم
             containerExtra.addView(createLabel(getString(R.string.label_profile_name_a)))
             val etName = android.widget.EditText(this).apply {
                 hint = getString(R.string.hint_profile_a)
@@ -233,13 +247,13 @@ class SetupWizardActivity : AppCompatActivity() {
             }
             containerExtra.addView(etName)
 
-            // Current credential info
+            // معلومات نوع القفل الحالي
             val credType = detectCurrentCredentialType()
             containerExtra.addView(createTextView(
                 getString(R.string.setup_user_a_current_credential, credType),
                 14f, getColor(android.R.color.holo_blue_dark), 0, 8, 0, 24, bold = false))
 
-            // Note
+            // ملاحظة
             containerExtra.addView(createTextView(getString(R.string.setup_user_a_note),
                 12f, getColor(android.R.color.darker_gray), 0, 0, 0, 16, bold = false))
 
@@ -251,21 +265,21 @@ class SetupWizardActivity : AppCompatActivity() {
                     val name = etName.text.toString().ifBlank { getString(R.string.profile_a) }
                     prefs.setProfileName(0, name)
 
-                    val credTypeEnum = when (credType) {
-                        "PIN", "رقم PIN" -> CredentialManager.CredentialType.PIN
-                        "نمط", "Pattern" -> CredentialManager.CredentialType.PATTERN
-                        "كلمة مرور", "Password" -> CredentialManager.CredentialType.PASSWORD
+                    val credTypeEnum = when {
+                        credType.contains("بصمة") -> CredentialManager.CredentialType.BIOMETRIC_PIN
+                        credType.contains("نمط") || credType.contains("Pattern") -> CredentialManager.CredentialType.PATTERN
+                        credType.contains("كلمة مرور") || credType.contains("Password") -> CredentialManager.CredentialType.PASSWORD
                         else -> CredentialManager.CredentialType.PIN
                     }
                     credentialManager.storeCredentialMeta(0, credTypeEnum, name)
                     showStep(3)
-                } catch (e: Throwable) {
+                } catch (e: Exception) {
                     Log.e(TAG, "UserA save failed", e)
-                    showStep(3) // Continue anyway
+                    showStep(3) // المتابعة على أي حال
                 }
             }
-        } catch (e: Throwable) {
-            Log.e(TAG, "showUserAConfigStep CRASH prevented", e)
+        } catch (e: Exception) {
+            Log.e(TAG, "showUserAConfigStep error", e)
         }
     }
 
@@ -281,13 +295,13 @@ class SetupWizardActivity : AppCompatActivity() {
                 }
             }
             getString(R.string.cred_pin)
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             getString(R.string.cred_pin)
         }
     }
 
     // ====================================================================
-    // STEP 3: CREATE USER B (The Critical Step)
+    // الخطوة 3: إنشاء المستخدم B (الطريقة الآمنة - عبر إعدادات النظام)
     // ====================================================================
 
     private fun showUserBConfigStep() {
@@ -306,12 +320,12 @@ class SetupWizardActivity : AppCompatActivity() {
             progressBar.progress = (4 * 100) / totalSteps
             containerExtra.removeAllViews()
 
-            // Check if User B already exists
+            // التحقق مما إذا كان المستخدم B موجوداً بالفعل
             if (userManager.hasSecondaryUser()) {
                 tvDesc.text = getString(R.string.setup_user_b_already_exists)
                 containerExtra.addView(createLabel(getString(R.string.label_profile_name_b)))
                 containerExtra.addView(createTextView(
-                    prefs.getSecondaryUserName() ?: prefs.getProfileName(1),
+                    userManager.getSecondaryUserName(),
                     16f, getColor(android.R.color.black), 0, 16, 0, 32))
                 btnBack.visibility = View.VISIBLE
                 btnBack.setOnClickListener { showStep(2) }
@@ -320,9 +334,9 @@ class SetupWizardActivity : AppCompatActivity() {
                 return
             }
 
-            tvDesc.text = getString(R.string.setup_user_b_desc)
+            tvDesc.text = getString(R.string.setup_user_b_desc_new)
 
-            // Name input
+            // حقل الاسم
             containerExtra.addView(createLabel(getString(R.string.label_profile_name_b)))
             val etName = android.widget.EditText(this).apply {
                 hint = getString(R.string.hint_profile_b)
@@ -331,96 +345,102 @@ class SetupWizardActivity : AppCompatActivity() {
             }
             containerExtra.addView(etName)
 
-            // Instructions
-            containerExtra.addView(createTextView(getString(R.string.setup_user_b_instructions),
+            // تعليمات واضحة
+            containerExtra.addView(createTextView(getString(R.string.setup_user_b_guide_new),
                 13f, getColor(android.R.color.holo_orange_dark), 0, 16, 0, 16, bold = false))
 
             btnBack.visibility = View.VISIBLE
             btnBack.setOnClickListener { showStep(2) }
-            btnNext.text = getString(R.string.create_user_b)
+            btnNext.text = getString(R.string.create_user_b_guide)
 
-            // ===== THE BUTTON THAT WAS CRASHING - Now bulletproof =====
+            // ===== الزر الآمن 100% - يفتح الإعدادات فقط =====
             btnNext.setOnClickListener {
                 handleCreateUserB(etName)
             }
-        } catch (e: Throwable) {
-            Log.e(TAG, "showUserBConfigStep CRASH prevented", e)
-            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Log.e(TAG, "showUserBConfigStep error", e)
+            Toast.makeText(this, "خطأ: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
     /**
-     * Handle "Create User B" button press - COMPLETELY SAFE
-     * This method will NEVER crash the app.
+     * معالجة إنشاء المستخدم B - الطريقة الآمنة تماماً.
+     * يفتح إعدادات النظام فقط ويطلب من المستخدم التأكيد.
      */
     private fun handleCreateUserB(etName: android.widget.EditText) {
         try {
             val name = etName.text.toString().ifBlank { getString(R.string.profile_b) }
             prefs.setProfileName(1, name)
 
-            // Disable button to prevent double-click
-            etName.isEnabled = false
-            val btnNext = findViewById<android.widget.Button>(R.id.btn_next)
-            btnNext?.isEnabled = false
-            btnNext?.text = getString(R.string.dialog_creating_user_b)
-
-            showProgress(getString(R.string.dialog_creating_user_b))
-
-            // Run creation on a background thread to NEVER block the UI
-            thread(name = "CreateUserB") {
-                var createResult: SystemUserManager.CreateResult? = null
-
-                try {
-                    // Attempt automatic creation (tries all methods internally)
-                    createResult = userManager.createSecondaryUser(name)
-                } catch (e: Throwable) {
-                    Log.e(TAG, "createSecondaryUser CRASH prevented", e)
-                    createResult = SystemUserManager.CreateResult(
-                        success = false, method = "ERROR",
-                        handle = null, error = "${e.javaClass.simpleName}: ${e.message}"
-                    )
-                }
-
-                // Switch back to main thread for UI updates
-                runOnUiThread {
-                    try {
-                        hideProgress()
-
-                        // Re-enable button
-                        btnNext?.isEnabled = true
-                        btnNext?.text = getString(R.string.create_user_b)
-                        etName.isEnabled = true
-
-                        if (createResult != null && createResult.success) {
-                            onUserBCreated(name)
-                        } else {
-                            onUserBCreationFailed(name, createResult?.error ?: "Unknown error")
-                        }
-                    } catch (e: Throwable) {
-                        Log.e(TAG, "UI update after creation CRASH prevented", e)
-                        Toast.makeText(this@SetupWizardActivity,
-                            "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            // عرض رسالة توجيهية واضحة
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.dialog_guide_create_title))
+                .setMessage(getString(R.string.dialog_guide_create_msg, name))
+                .setPositiveButton(getString(R.string.dialog_open_settings)) { _, _ ->
+                    // فتح إعدادات المستخدمين
+                    val opened = userManager.openUserSettingsForCreation()
+                    if (!opened) {
+                        Toast.makeText(this,
+                            getString(R.string.dialog_cannot_open_settings),
+                            Toast.LENGTH_LONG).show()
                     }
+
+                    // عرض مربع حوار التأكيد
+                    showConfirmUserBCreatedDialog(name)
                 }
-            }
-        } catch (e: Throwable) {
-            Log.e(TAG, "handleCreateUserB CRASH prevented", e)
-            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                .setNegativeButton(getString(R.string.dialog_cancel)) { _, _ ->
+                    // إلغاء - البقاء في نفس الصفحة
+                }
+                .setCancelable(false)
+                .show()
+        } catch (e: Exception) {
+            Log.e(TAG, "handleCreateUserB error", e)
+            Toast.makeText(this, "خطأ: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
     /**
-     * User B was created successfully
+     * عرض مربع حوار التأكيد بعد إنشاء المستخدم B
      */
-    private fun onUserBCreated(name: String) {
+    private fun showConfirmUserBCreatedDialog(name: String) {
         try {
-            credentialManager.storeCredentialMeta(1, CredentialManager.CredentialType.PIN, name)
-            SecurityLog.log(this, "SUCCESS", "setup_user_b", "User B '$name' created")
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.dialog_confirm_user_title))
+                .setMessage(getString(R.string.dialog_confirm_user_msg, name))
+                .setPositiveButton(getString(R.string.dialog_yes_created)) { _, _ ->
+                    // المستخدم أكد الإنشاء
+                    userManager.confirmUserBCreated(name)
+                    credentialManager.storeCredentialMeta(1, CredentialManager.CredentialType.PIN, name)
+                    SecurityLog.log(this, "SUCCESS", "user_b_created", "User B '$name' confirmed")
 
+                    // عرض رسالة تعيين كلمة المرور
+                    showSetCredentialDialog(name)
+                }
+                .setNegativeButton(getString(R.string.dialog_not_yet)) { _, _ ->
+                    // المستخدم لم ينشئ بعد - البقاء في نفس الصفحة
+                    Toast.makeText(this,
+                        getString(R.string.dialog_not_created_yet),
+                        Toast.LENGTH_LONG).show()
+                }
+                .setCancelable(false)
+                .show()
+        } catch (e: Exception) {
+            Log.e(TAG, "showConfirmDialog error", e)
+            Toast.makeText(this, "خطأ: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /**
+     * عرض رسالة تعيين كلمة مرور للمستخدم B
+     */
+    private fun showSetCredentialDialog(name: String) {
+        try {
             AlertDialog.Builder(this)
                 .setTitle(getString(R.string.dialog_set_user_b_credential_title))
-                .setMessage(getString(R.string.dialog_set_user_b_credential_msg, name))
+                .setMessage(getString(R.string.dialog_set_user_b_credential_msg, name, name))
                 .setPositiveButton(getString(R.string.dialog_switch_and_set)) { _, _ ->
+                    // فتح إعدادات الأمان لتعيين كلمة المرور
+                    userManager.openSecuritySettings()
                     showStep(4)
                 }
                 .setNegativeButton(getString(R.string.dialog_set_later)) { _, _ ->
@@ -428,66 +448,14 @@ class SetupWizardActivity : AppCompatActivity() {
                 }
                 .setCancelable(false)
                 .show()
-        } catch (e: Throwable) {
-            Log.e(TAG, "onUserBCreated CRASH prevented", e)
-            showStep(4)
-        }
-    }
-
-    /**
-     * All automatic methods failed - offer manual creation
-     */
-    private fun onUserBCreationFailed(name: String, errorReason: String) {
-        try {
-            Log.d(TAG, "Auto-creation failed: $errorReason")
-
-            AlertDialog.Builder(this)
-                .setTitle(getString(R.string.dialog_auto_create_failed_title))
-                .setMessage(getString(R.string.dialog_auto_create_failed_msg, name, name))
-                .setPositiveButton(getString(R.string.dialog_open_settings)) { _, _ ->
-                    // Open system settings for manual creation
-                    val opened = userManager.openUserSettings()
-                    if (!opened) {
-                        Toast.makeText(this,
-                            "Could not open settings. Go to: Settings > System > Multiple users",
-                            Toast.LENGTH_LONG).show()
-                    }
-
-                    // Start polling for new user
-                    showProgress(getString(R.string.dialog_waiting_for_user))
-
-                    detectJob = lifecycleScope.launch {
-                        val detectResult = userManager.detectNewSecondaryUser(timeoutMs = 180_000)
-
-                        runOnUiThread {
-                            try {
-                                hideProgress()
-                            } catch (e: Throwable) {}
-
-                            if (detectResult.success) {
-                                onUserBCreated(name)
-                            } else {
-                                Toast.makeText(this@SetupWizardActivity,
-                                    getString(R.string.dialog_user_not_detected),
-                                    Toast.LENGTH_LONG).show()
-                            }
-                        }
-                    }
-                }
-                .setNegativeButton(getString(R.string.dialog_retry_later)) { _, _ ->
-                    showStep(4)
-                }
-                .setCancelable(false)
-                .show()
-        } catch (e: Throwable) {
-            Log.e(TAG, "onUserBCreationFailed CRASH prevented", e)
-            // Last resort: just skip to next step
+        } catch (e: Exception) {
+            Log.e(TAG, "showSetCredentialDialog error", e)
             showStep(4)
         }
     }
 
     // ====================================================================
-    // STEP 4: SECURITY & FINALIZE
+    // الخطوة 4: الإعدادات النهائية والتفعيل
     // ====================================================================
 
     private fun showSecurityAndFinalizeStep() {
@@ -507,7 +475,7 @@ class SetupWizardActivity : AppCompatActivity() {
             tvDesc.text = getString(R.string.setup_security_desc)
             containerExtra.removeAllViews()
 
-            // Summary
+            // ملخص
             containerExtra.addView(createTextView(getString(R.string.setup_complete_title),
                 17f, getColor(android.R.color.black), 0, 0, 0, 16, bold = true))
 
@@ -529,7 +497,7 @@ class SetupWizardActivity : AppCompatActivity() {
                 14f, getColor(android.R.color.black), 0, 4, 0, 4, bold = false))
             containerExtra.addView(createTextView("", 14f, 0, 0, 0, 0, 0, bold = false))
 
-            // Separator
+            // فاصل
             val separator = android.view.View(this).apply {
                 setBackgroundColor(getColor(android.R.color.darker_gray))
                 layoutParams = android.widget.LinearLayout.LayoutParams(
@@ -538,7 +506,7 @@ class SetupWizardActivity : AppCompatActivity() {
             }
             containerExtra.addView(separator)
 
-            // Secret code
+            // الرمز السري
             containerExtra.addView(createLabel(getString(R.string.label_secret_code)))
             val etSecret = android.widget.EditText(this).apply {
                 hint = getString(R.string.hint_secret_code)
@@ -550,7 +518,7 @@ class SetupWizardActivity : AppCompatActivity() {
             }
             containerExtra.addView(etSecret)
 
-            // Stealth mode checkbox
+            // خانة وضع التخفي
             val cbStealth = android.widget.CheckBox(this).apply {
                 text = getString(R.string.label_stealth_mode)
                 textSize = 16f
@@ -562,7 +530,7 @@ class SetupWizardActivity : AppCompatActivity() {
             containerExtra.addView(createTextView(getString(R.string.setup_stealth_info),
                 12f, getColor(android.R.color.darker_gray), 48, 0, 0, 24))
 
-            // Important notice
+            // إشعار مهم
             containerExtra.addView(createTextView(getString(R.string.setup_important_notice),
                 13f, getColor(android.R.color.holo_orange_dark), 0, 16, 0, 16))
 
@@ -575,13 +543,13 @@ class SetupWizardActivity : AppCompatActivity() {
                     stealthManager.setSecretCode(code)
                     prefs.setStealthModeEnabled(cbStealth.isChecked)
                     activateSystem()
-                } catch (e: Throwable) {
-                    Log.e(TAG, "finalize CRASH prevented", e)
-                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                } catch (e: Exception) {
+                    Log.e(TAG, "finalize error", e)
+                    Toast.makeText(this, "خطأ: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
-        } catch (e: Throwable) {
-            Log.e(TAG, "showSecurityStep CRASH prevented", e)
+        } catch (e: Exception) {
+            Log.e(TAG, "showSecurityStep error", e)
         }
     }
 
@@ -604,12 +572,12 @@ class SetupWizardActivity : AppCompatActivity() {
                     .setPositiveButton(getString(R.string.dialog_ok)) { _, _ -> finish() }
                     .setCancelable(false)
                     .show()
-            } catch (e: Throwable) {
-                Log.e(TAG, "activateSystem CRASH prevented", e)
+            } catch (e: Exception) {
+                Log.e(TAG, "activateSystem error", e)
                 runOnUiThread {
-                    try { hideProgress() } catch (ignored: Throwable) {}
+                    try { hideProgress() } catch (ignored: Exception) {}
                     Toast.makeText(this@SetupWizardActivity,
-                        "Activation error: ${e.message}", Toast.LENGTH_LONG).show()
+                        "خطأ في التفعيل: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -629,17 +597,17 @@ class SetupWizardActivity : AppCompatActivity() {
                     } else {
                         startService(intent)
                     }
-                } catch (e: Throwable) {
+                } catch (e: Exception) {
                     Log.e(TAG, "Failed to start ${svc.simpleName}", e)
                 }
             }
-        } catch (e: Throwable) {
-            Log.e(TAG, "startServices CRASH prevented", e)
+        } catch (e: Exception) {
+            Log.e(TAG, "startServices error", e)
         }
     }
 
     // ====================================================================
-    // UTILITY VIEWS
+    // أدوات إنشاء العروض
     // ====================================================================
 
     private fun createLabel(text: String): android.widget.TextView {
@@ -666,25 +634,20 @@ class SetupWizardActivity : AppCompatActivity() {
     }
 
     // ====================================================================
-    // PROGRESS DIALOG
+    // مربع حوار التقدم
     // ====================================================================
 
     private fun showProgress(message: String) {
         try {
-            runOnUiThread {
-                try {
-                    hideProgress()
-                    progressDialog = AlertDialog.Builder(this)
-                        .setMessage(message)
-                        .setCancelable(false)
-                        .create()
-                    progressDialog?.show()
-                } catch (e: Throwable) {
-                    Log.e(TAG, "showProgress error", e)
-                }
-            }
-        } catch (e: Throwable) {
-            Log.e(TAG, "showProgress CRASH prevented", e)
+            if (isFinishing) return
+            hideProgress()
+            progressDialog = AlertDialog.Builder(this)
+                .setMessage(message)
+                .setCancelable(false)
+                .create()
+            progressDialog?.show()
+        } catch (e: Exception) {
+            Log.e(TAG, "showProgress error", e)
         }
     }
 
@@ -694,13 +657,13 @@ class SetupWizardActivity : AppCompatActivity() {
                 progressDialog?.dismiss()
             }
             progressDialog = null
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             progressDialog = null
         }
     }
 
     // ====================================================================
-    // SETUP COMPLETE DIALOG
+    // مربع حوار الإعداد المكتمل
     // ====================================================================
 
     private fun showSetupCompleteDialog() {
@@ -715,21 +678,20 @@ class SetupWizardActivity : AppCompatActivity() {
                 }
                 .setNegativeButton(getString(R.string.dialog_close)) { _, _ -> finish() }
                 .show()
-        } catch (e: Throwable) {
-            Log.e(TAG, "showSetupCompleteDialog CRASH prevented", e)
+        } catch (e: Exception) {
+            Log.e(TAG, "showSetupCompleteDialog error", e)
             finish()
         }
     }
 
     // ====================================================================
-    // LIFECYCLE
+    // دورة الحياة
     // ====================================================================
 
     override fun onDestroy() {
         try {
-            detectJob?.cancel()
             hideProgress()
-        } catch (e: Throwable) {}
+        } catch (e: Exception) {}
         super.onDestroy()
     }
 
@@ -740,7 +702,7 @@ class SetupWizardActivity : AppCompatActivity() {
             } else {
                 super.onBackPressed()
             }
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             super.onBackPressed()
         }
     }

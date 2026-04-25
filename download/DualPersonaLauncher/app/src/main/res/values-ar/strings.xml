@@ -15,8 +15,15 @@
     <!-- User B -->
     <string name="setup_user_b_title">إنشاء الملف الشخصي B</string>
     <string name="setup_user_b_desc">سيتم إنشاء مستخدم Android ثانوي ببيئة منفصلة تماماً. كل مستخدم يحصل على تخزين وتطبيقات وبيانات اعتماد خاصة به.</string>
+    <string name="setup_user_b_desc_new">سيقوم التطبيق بتوجيهك إلى إعدادات النظام لإنشاء مستخدم جديد. هذه الطريقة آمنة 100% وتعمل على جميع أجهزة Android.</string>
     <string name="setup_user_b_already_exists">الملف الشخصي B موجود بالفعل. يمكنك المتابعة للخطوة التالية.</string>
     <string name="setup_user_b_instructions">سيقوم التطبيق بمحاولة إنشاء المستخدم B تلقائياً. إذا فشلت العملية (بسبب قيود الشركة المصنعة)، سيتم توجيهك إلى إعدادات النظام لإنشائه يدوياً.</string>
+    <string name="setup_user_b_guide_new">الخطوات:
+1. اضغط الزر أدناه لفتح إعدادات المستخدمين
+2. اختر "إضافة مستخدم" أو "ملف شخصي جديد"
+3. أدخل اسم المستخدم
+4. انتظر حتى يتم الإنشاء
+5. ارجع للتطبيق واضغط "نعم تم الإنشاء"</string>
     <string name="setup_multi_user_not_supported">جهازك لا يدعم وضع المستخدمين المتعددين. سيعمل التطبيق في وضع محدود.</string>
     <string name="setup_security_title">الإعدادات النهائية والتفعيل</string>
     <string name="setup_security_desc">راجع الإعدادات وقم بتفعيل النظام.</string>
@@ -33,6 +40,7 @@
     <string name="grant_permissions">منح الصلاحيات</string>
     <string name="set_and_continue">تأكيد ومتابعة</string>
     <string name="create_user_b">إنشاء المستخدم B</string>
+    <string name="create_user_b_guide">فتح الإعدادات لإنشاء المستخدم B</string>
     <string name="activate_now">تفعيل الآن</string>
     <string name="next">التالي</string>
     <string name="skip">تخطي</string>
@@ -127,6 +135,26 @@
 
     <!-- ===== New Dialog Messages for User B Creation ===== -->
     <string name="dialog_auto_create_failed_title">إنشاء المستخدم B يدوياً</string>
+    <string name="dialog_guide_create_title">إنشاء مستخدم جديد من إعدادات النظام</string>
+    <string name="dialog_guide_create_msg">سيتم فتح إعدادات المستخدمين في النظام.
+
+الخطوات:
+1. اضغط على "إضافة مستخدم" أو "إنشاء ملف شخصي"
+2. اختر "مستخدم جديد" (وليس ضيف)
+3. أدخل الاسم: %s
+4. اضغط "إنشاء" أو "موافق"
+5. انتظر حتى يكتمل الإنشاء
+6. ارجع للتطبيق</string>
+    <string name="dialog_cannot_open_settings">لم يتم فتح الإعدادات. يرجى الذهاب يدوياً إلى:
+الإعدادات > النظام > المستخدمين</string>
+    <string name="dialog_confirm_user_title">هل أنشأت المستخدم "%s"؟</string>
+    <string name="dialog_confirm_user_msg">هل قمت بإنشاء المستخدم "%s" بنجاح في إعدادات النظام؟
+
+اضغط "نعم" إذا تم الإنشاء
+اضغط "لا" إذا لم تنتهِ بعد</string>
+    <string name="dialog_yes_created">نعم، تم الإنشاء</string>
+    <string name="dialog_not_yet">لا، لم أنشئه بعد</string>
+    <string name="dialog_not_created_yet">لا مشكلة، يمكنك إنشاؤه لاحقاً من الإعدادات.</string>
     <string name="dialog_auto_create_failed_msg">لم يتمكن التطبيق من إنشاء المستخدم \"%s\" تلقائياً بسبب قيود النظام.\n\nسيتم فتح إعدادات المستخدمين في النظام.\n\nالخطوات:\n1. اضغط على \"إضافة مستخدم\" أو \"إنشاء ملف شخصي\"\n2. اختر نوع الملف الشخصي (مستخدم جديد)\n3. أدخل الاسم: %s\n4. انتظر حتى يتم إنشائه\n5. ارجع للتطبيق (سيتم اكتشافه تلقائياً)</string>
     <string name="dialog_open_settings">فتح الإعدادات</string>
     <string name="dialog_retry_later">تخطي ومتابعة</string>

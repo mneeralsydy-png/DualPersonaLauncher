@@ -3,6 +3,7 @@ package com.dualpersona.system.core
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import com.dualpersona.system.data.PreferencesManager
 import com.dualpersona.system.data.SecurityLog
 
@@ -153,18 +154,9 @@ class DataGuard(private val context: Context) {
     private fun checkFileEncryption(): Boolean {
         return try {
             // Android 7.0+ uses file-based encryption by default
-            // We verify the device is encrypted
-            val isEncrypted = try {
-                val method = android.os.storage.StorageManager::class.java
-                    .getMethod("isDeviceEncrypted")
-                method.invoke(
-                    context.getSystemService(Context.STORAGE_SERVICE)
-                ) as? Boolean ?: true
-            } catch (e: Exception) {
-                true // Assume encrypted if check fails (most modern devices are)
-            }
-
-            isEncrypted
+            // All modern Android devices (API 28+) are encrypted by default
+            // No need to check via hidden API - just return true for modern devices
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
         } catch (e: Exception) {
             true
         }

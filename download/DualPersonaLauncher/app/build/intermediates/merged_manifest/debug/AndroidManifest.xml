@@ -1,43 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dualpersona.system"
-    android:versionCode="1"
-    android:versionName="1.0.0" >
+    android:versionCode="3"
+    android:versionName="2.0.0" >
 
     <uses-sdk
         android:minSdkVersion="28"
         android:targetSdkVersion="34" />
 
-    <!-- ===== PERMISSIONS ===== -->
-    <!-- Device Admin -->
-    <uses-permission android:name="android.permission.MANAGE_USERS" />
-    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
-    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
+    <!-- ===== صلاحيات ===== -->
+    <!-- تمت إزالة صلاحيات النظام غير القابلة للمنح (MANAGE_USERS, INTERACT_ACROSS_USERS) -->
+    <!-- لأنها مخصصة للتطبيقات النظامية فقط وتسبب انهيار التطبيق -->
 
-    <!-- System Integration -->
+
+    <!-- إعادة التشغيل -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- الخدمات الأمامية -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
-    <!-- Biometric -->
+    <!-- البصمة -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
-    <!-- Process & Usage -->
-    <uses-permission android:name="android.permission.GET_TASKS" />
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <!-- الإشعارات -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Network (for updates) -->
+    <!-- الشبكة -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!-- Storage -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <!-- Notification -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- suppress DeprecatedClassUsageInspection -->
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
@@ -54,19 +45,17 @@
         android:allowBackup="false"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
-        android:directBootAware="true"
         android:extractNativeLibs="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:persistent="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DualPersona" >
 
-        <!-- ===== MAIN ACTIVITIES ===== -->
+        <!-- ===== الأنشطة الرئيسية ===== -->
 
 
-        <!-- Setup Wizard - shown only on first launch -->
+        <!-- معالج الإعداد -->
         <activity
             android:name="com.dualpersona.system.ui.setup.SetupWizardActivity"
             android:excludeFromRecents="true"
@@ -80,7 +69,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Hidden Dashboard - accessible only via secret code -->
+        <!-- لوحة التحكم المخفية -->
         <activity
             android:name="com.dualpersona.system.ui.dashboard.DashboardActivity"
             android:excludeFromRecents="true"
@@ -89,7 +78,7 @@
             android:taskAffinity=""
             android:theme="@style/Theme.DualPersona.Stealth" />
 
-        <!-- ===== DEVICE ADMIN ===== -->
+        <!-- ===== مسؤول الجهاز ===== -->
         <receiver
             android:name="com.dualpersona.system.receiver.DualPersonaAdmin"
             android:exported="true"
@@ -108,13 +97,12 @@
             </intent-filter>
         </receiver>
 
-        <!-- ===== BROADCAST RECEIVERS ===== -->
+        <!-- ===== مستقبلات البث ===== -->
 
 
-        <!-- Boot Receiver - starts services after reboot -->
+        <!-- مستقبل إعادة التشغيل -->
         <receiver
             android:name="com.dualpersona.system.receiver.BootReceiver"
-            android:directBootAware="true"
             android:enabled="true"
             android:exported="true" >
             <intent-filter android:priority="1000" >
@@ -123,7 +111,7 @@
             </intent-filter>
         </receiver>
 
-        <!-- User Switch Receiver - monitors profile switches -->
+        <!-- مستقبل تبديل المستخدم -->
         <receiver
             android:name="com.dualpersona.system.receiver.UserSwitchReceiver"
             android:enabled="true"
@@ -135,7 +123,7 @@
             </intent-filter>
         </receiver>
 
-        <!-- Secret Dial Receiver - access app via *#*#CODE#*#* -->
+        <!-- مستقبل الرمز السري -->
         <receiver
             android:name="com.dualpersona.system.receiver.SecretDialReceiver"
             android:enabled="true"
@@ -147,10 +135,10 @@
             </intent-filter>
         </receiver>
 
-        <!-- ===== FOREGROUND SERVICES ===== -->
+        <!-- ===== الخدمات الأمامية ===== -->
 
 
-        <!-- Main System Service -->
+        <!-- خدمة النظام -->
         <service
             android:name="com.dualpersona.system.service.SystemService"
             android:enabled="true"
@@ -158,10 +146,10 @@
             android:foregroundServiceType="specialUse" >
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Dual persona user management and data isolation" />
+                android:value="Dual persona user management" />
         </service>
 
-        <!-- Guard Service - continuous monitoring -->
+        <!-- خدمة الحماية -->
         <service
             android:name="com.dualpersona.system.service.GuardService"
             android:enabled="true"
@@ -169,10 +157,10 @@
             android:foregroundServiceType="specialUse" >
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Security monitoring and data isolation enforcement" />
+                android:value="Security monitoring" />
         </service>
 
-        <!-- ===== PROVIDERS ===== -->
+        <!-- ===== مزودو الخدمات ===== -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="com.dualpersona.system.androidx-startup"
