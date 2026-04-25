@@ -9,15 +9,9 @@ import com.dualpersona.system.data.SecurityLog
 
 /**
  * SystemUserManager - يدير المستخدمين المتعددين بطريقة آمنة 100%
- *
- * لا يستخدم أي API مخفي أو انعكاس (reflection)
- * لا يحدث أي انهيار - أبداً
- *
- * الاستراتيجية:
- * - إنشاء المستخدم B يتم عبر إعدادات النظام فقط (بدون برمجة)
- * - يفتح التطبيق إعدادات المستخدمين ويوجه المستخدم
- * - المستخدم يؤكد إنشاء المستخدم B بنفسه
- * - التبديل بين المستخدمين يتم عبر إعدادات النظام
+ * 
+ * لا يستخدم أي API مخفي ولا يحدث أي انهيار أبداً
+ * الاستراتيجية: فتح إعدادات النظام فقط
  */
 class SystemUserManager(private val context: Context) {
 
@@ -27,63 +21,37 @@ class SystemUserManager(private val context: Context) {
 
     private val prefs: PreferencesManager = PreferencesManager(context)
 
-    // ====================================================================
-    // إنشاء المستخدم B - الطريقة الآمنة (عبر إعدادات النظام)
-    // ====================================================================
-
     /**
-     * فتح إعدادات المستخدمين في النظام لإنشاء مستخدم جديد يدوياً.
-     * هذه الطريقة آمنة 100% - لا تستخدم أي API مخفي.
-     *
-     * @return true إذا تم فتح الإعدادات بنجاح
+     * فتح إعدادات المستخدمين - آمن 100%
      */
-    fun openUserSettingsForCreation(): Boolean {
+    fun openUserSettings(): Boolean {
         val intents = listOf(
-            // الطريقة 1: إعدادات المستخدمين مباشرة
-            Intent("android.settings.USER_SETTINGS").apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            },
-            // الطريقة 2: قائمة المستخدمين
-            Intent("android.settings.USERS").apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            },
-            // الطريقة 3: فتح من خلال Settings
-            Intent(android.provider.Settings.ACTION_SETTINGS).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
+            Intent("android.settings.USER_SETTINGS").apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) },
+            Intent("android.settings.USERS").apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) },
+            Intent(android.provider.Settings.ACTION_SETTINGS).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
         )
-
         for (intent in intents) {
             try {
                 context.startActivity(intent)
-                SecurityLog.log(context, "INFO", "open_user_settings",
-                    "Opened system user settings for manual creation")
                 return true
             } catch (e: Exception) {
-                Log.d(TAG, "Intent failed: ${intent.action}: ${e.message}")
+                Log.d(TAG, "Intent failed: ${e.message}")
             }
         }
         return false
     }
 
     /**
-     * فتح إعدادات الأمان لتعيين كلمة مرور القفل للمستخدم B.
+     * فتح إعدادات الأمان لتعيين كلمة مرور القفل
      */
     fun openSecuritySettings(): Boolean {
         val intents = listOf(
-            Intent(android.provider.Settings.ACTION_SECURITY_SETTINGS).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            },
-            Intent("android.settings.LOCK_SETTINGS").apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
+            Intent(android.provider.Settings.ACTION_SECURITY_SETTINGS).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) },
+            Intent("android.settings.LOCK_SETTINGS").apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
         )
-
         for (intent in intents) {
             try {
                 context.startActivity(intent)
-                SecurityLog.log(context, "INFO", "open_security",
-                    "Opened security settings for credential setup")
                 return true
             } catch (e: Exception) {
                 Log.d(TAG, "Security intent failed: ${e.message}")
@@ -93,66 +61,49 @@ class SystemUserManager(private val context: Context) {
     }
 
     /**
-     * تأكيد أن المستخدم B تم إنشاؤه يدوياً.
-     * يخزن هذه المعلومة محلياً بدون أي API مخفي.
+     * فتح إعدادات البصمة
+     */
+    fun openBiometricSettings(): Boolean {
+        return try {
+            val intent = Intent(android.provider.Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(intent)
+            true
+        } catch (e: Exception) { false }
+    }
+
+    /**
+     * فتح إعدادات الشاشة والقفل
+     */
+    fun openLockScreenSettings(): Boolean {
+        return try {
+            val intent = Intent(android.provider.Settings.ACTION_SECURITY_SETTINGS).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                putExtra("android.provider.extra.INSTALLER_PACKAGE_NAME", context.packageName)
+            }
+            context.startActivity(intent)
+            true
+        } catch (e: Exception) { false }
+    }
+
+    /**
+     * تأكيد أن المستخدم B تم إنشاؤه
      */
     fun confirmUserBCreated(userName: String) {
-        prefs.setSecondaryUserName(userName)
-        prefs.setSecondaryUserConfirmed(true)
-        prefs.setSecondaryUserHandleId(System.currentTimeMillis())
-        SecurityLog.log(context, "SUCCESS", "user_b_confirmed",
-            "User B '$userName' confirmed as created")
-    }
-
-    /**
-     * فتح إعدادات المستخدمين للتبديل بين المستخدمين.
-     */
-    fun openUserSwitchSettings(): Boolean {
-        val intents = listOf(
-            Intent("android.settings.USER_SETTINGS").apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            },
-            Intent("android.settings.USERS").apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            },
-            Intent(android.provider.Settings.ACTION_SETTINGS).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-        )
-
-        for (intent in intents) {
-            try {
-                context.startActivity(intent)
-                SecurityLog.log(context, "INFO", "open_switch",
-                    "Opened user switch settings")
-                return true
-            } catch (e: Exception) {
-                Log.d(TAG, "Switch intent failed: ${e.message}")
-            }
-        }
-        return false
-    }
-
-    // ====================================================================
-    // استعلامات آمنة (بدون API مخفي)
-    // ====================================================================
-
-    /**
-     * التحقق مما إذا كان المستخدم B تم تأكيده.
-     * يقرأ فقط من التفضيلات المحلية - آمن 100%.
-     */
-    fun hasSecondaryUser(): Boolean {
-        return try {
-            prefs.isSecondaryUserConfirmed()
+        try {
+            prefs.setSecondaryUserName(userName)
+            prefs.setSecondaryUserConfirmed(true)
+            SecurityLog.log(context, "SUCCESS", "user_b_confirmed", "User B '$userName' confirmed")
         } catch (e: Exception) {
-            false
+            Log.e(TAG, "confirmUserBCreated error", e)
         }
     }
 
-    /**
-     * الحصول على اسم المستخدم B.
-     * يقرأ فقط من التفضيلات المحلية - آمن 100%.
-     */
+    fun hasSecondaryUser(): Boolean {
+        return try { prefs.isSecondaryUserConfirmed() } catch (e: Exception) { false }
+    }
+
     fun getSecondaryUserName(): String {
         return try {
             prefs.getSecondaryUserName() ?: prefs.getProfileName(1)
@@ -161,9 +112,6 @@ class SystemUserManager(private val context: Context) {
         }
     }
 
-    /**
-     * الحصول على معلومات المستخدم B.
-     */
     fun getSecondaryUserInfo(): Map<String, Any?> {
         return try {
             mapOf(
@@ -176,51 +124,12 @@ class SystemUserManager(private val context: Context) {
         }
     }
 
-    /**
-     * التحقق مما إذا كان الجهاز يدعم المستخدمين المتعددين.
-     * يستخدم API عام فقط.
-     */
-    fun isMultiUserSupported(): Boolean {
-        return try {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    // ====================================================================
-    // إزالة المستخدم B (عبر إعدادات النظام)
-    // ====================================================================
-
-    /**
-     * فتح إعدادات المستخدمين لحذف المستخدم B يدوياً.
-     */
-    fun openUserSettingsForRemoval(): Boolean {
-        val opened = openUserSettingsForCreation()
-        if (opened) {
-            SecurityLog.log(context, "INFO", "open_remove",
-                "Opened settings for user B removal")
-        }
-        return opened
-    }
-
-    /**
-     * إزالة بيانات المستخدم B محلياً (بعد حذفه من النظام).
-     */
     fun confirmUserBRemoved() {
-        prefs.clearSecondaryUser()
-        prefs.setSecondaryUserConfirmed(false)
-        SecurityLog.log(context, "INFO", "user_b_removed",
-            "User B data cleared from preferences")
+        try {
+            prefs.clearSecondaryUser()
+            SecurityLog.log(context, "INFO", "user_b_removed", "User B data cleared")
+        } catch (e: Exception) {}
     }
 
-    // ====================================================================
-    // لا نستخدم CreateResult بعد الآن - التطبيق لا ينشئ المستخدم برمجياً
-    // ====================================================================
-    data class CreateResult(
-        val success: Boolean,
-        val method: String,
-        val handle: Any?,
-        val error: String?
-    )
+    fun isMultiUserSupported(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
 }

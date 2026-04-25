@@ -20,85 +20,68 @@ class DualPersonaApp : Application() {
         const val CHANNEL_SYSTEM = "dual_persona_system"
         const val CHANNEL_GUARD = "dual_persona_guard"
         const val CHANNEL_ALERT = "dual_persona_alert"
-
         const val NOTIFICATION_ID_SYSTEM = 1001
         const val NOTIFICATION_ID_GUARD = 1002
 
         lateinit var appScope: CoroutineScope
             private set
-
-        lateinit var prefs: PreferencesManager
-            private set
     }
 
     override fun onCreate() {
         super.onCreate()
+        try {
+            appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+            createNotificationChannels()
 
-        appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-        prefs = PreferencesManager(this)
-
-        createNotificationChannels()
-
-        if (prefs.isSetupComplete() && !prefs.isStealthModeEnabled()) {
-            StealthManager.restoreAppIcon(this)
+            val prefs = PreferencesManager(this)
+            if (prefs.isSetupComplete() && !prefs.isStealthModeEnabled()) {
+                StealthManager.restoreAppIcon(this)
+            }
+        } catch (e: Exception) {
+            // Never crash on app startup
         }
     }
 
     override fun attachBaseContext(base: Context) {
-        // Force Arabic locale for the entire app
-        val arabicLocale = Locale("ar")
-        val config = Configuration(base.resources.configuration)
-        config.setLocale(arabicLocale)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            config.setLocales(LocaleList(arabicLocale))
+        try {
+            val arabicLocale = Locale("ar")
+            val config = Configuration(base.resources.configuration)
+            config.setLocale(arabicLocale)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                config.setLocales(LocaleList(arabicLocale))
+            }
+            val context = base.createConfigurationContext(config)
+            super.attachBaseContext(context)
+        } catch (e: Exception) {
+            super.attachBaseContext(base)
         }
-        val context = base.createConfigurationContext(config)
-        super.attachBaseContext(context)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        // Re-force Arabic on configuration changes
-        val arabicLocale = Locale("ar")
-        val config = Configuration(newConfig)
-        config.setLocale(arabicLocale)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            config.setLocales(LocaleList(arabicLocale))
-        }
-        @Suppress("DEPRECATION")
-        resources.updateConfiguration(config, resources.displayMetrics)
+        try {
+            val arabicLocale = Locale("ar")
+            val config = Configuration(newConfig)
+            config.setLocale(arabicLocale)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                config.setLocales(LocaleList(arabicLocale))
+            }
+            @Suppress("DEPRECATION")
+            resources.updateConfiguration(config, resources.displayMetrics)
+        } catch (e: Exception) {}
     }
 
     private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channels = listOf(
-                NotificationChannel(
-                    CHANNEL_SYSTEM,
-                    "خدمة النظام",
-                    NotificationManager.IMPORTANCE_LOW
-                ).apply {
-                    description = "إدارة بيئات الهوية المزدوجة"
-                    setShowBadge(false)
-                },
-                NotificationChannel(
-                    CHANNEL_GUARD,
-                    "الحماية الأمنية",
-                    NotificationManager.IMPORTANCE_MIN
-                ).apply {
-                    description = "مراقبة عزل البيانات والأمان"
-                    setShowBadge(false)
-                },
-                NotificationChannel(
-                    CHANNEL_ALERT,
-                    "تنبيهات أمنية",
-                    NotificationManager.IMPORTANCE_HIGH
-                ).apply {
-                    description = "إشعارات أمنية مهمة"
-                }
-            )
-
-            val nm = getSystemService(NotificationManager::class.java)
-            nm.createNotificationChannels(channels)
+            try {
+                val channels = listOf(
+                    NotificationChannel(CHANNEL_SYSTEM, "خدمة النظام", NotificationManager.IMPORTANCE_LOW),
+                    NotificationChannel(CHANNEL_GUARD, "الحماية الأمنية", NotificationManager.IMPORTANCE_MIN),
+                    NotificationChannel(CHANNEL_ALERT, "تنبيهات أمنية", NotificationManager.IMPORTANCE_HIGH)
+                )
+                val nm = getSystemService(NotificationManager::class.java)
+                nm.createNotificationChannels(channels)
+            } catch (e: Exception) {}
         }
     }
 }

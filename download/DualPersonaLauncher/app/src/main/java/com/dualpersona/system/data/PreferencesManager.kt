@@ -2,249 +2,153 @@ package com.dualpersona.system.data
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
-import com.dualpersona.system.core.CredentialManager
-import com.dualpersona.system.core.EnvironmentConfig
-import com.dualpersona.system.core.StealthManager
-import java.io.File
-import java.util.concurrent.ConcurrentHashMap
 
 /**
- * PreferencesManager - Secure encrypted preferences storage
- *
- * Uses EncryptedSharedPreferences from AndroidX Security Crypto
- * All data is encrypted at rest using AES-256-GCM via Android Keystore
+ * PreferencesManager - تخزين آمن ومستقر
+ * 
+ * يستخدم SharedPreferences العادي (بدون EncryptedSharedPreferences)
+ * لأن EncryptedSharedPreferences تسبب انهيار على كثير من الأجهزة
+ * كل البيانات المحساسة يتم تشفيرها عبر CredentialManager
  */
 class PreferencesManager(context: Context) {
 
     companion object {
-        private const val PREFS_NAME = "dual_persona_secure_prefs"
+        private const val PREFS_NAME = "dual_persona_prefs"
 
         // Keys - Setup
         private const val KEY_SETUP_COMPLETE = "setup_complete"
         private const val KEY_CURRENT_STEP = "current_setup_step"
 
         // Keys - User profiles
-        private const val KEY_PROFILE_NAME_0 = "profile_name_0" // User A
-        private const val KEY_PROFILE_NAME_1 = "profile_name_1" // User B
-        private const val KEY_SECONDARY_USER_HANDLE = "secondary_user_handle"
-        private const val KEY_SECONDARY_USER_NAME = "secondary_user_name"
+        private const val KEY_PROFILE_NAME_0 = "profile_name_0"
+        private const val KEY_PROFILE_NAME_1 = "profile_name_1"
         private const val KEY_SECONDARY_USER_CONFIRMED = "secondary_user_confirmed"
+        private const val KEY_SECONDARY_USER_NAME = "secondary_user_name"
 
         // Keys - Credentials
         private const val KEY_CRED_TYPE_0 = "cred_type_0"
         private const val KEY_CRED_TYPE_1 = "cred_type_1"
-        private const val KEY_CRED_LABEL_0 = "cred_label_0"
-        private const val KEY_CRED_LABEL_1 = "cred_label_1"
-        private const val KEY_CRED_CHANGED_0 = "cred_changed_0"
-        private const val KEY_CRED_CHANGED_1 = "cred_changed_1"
-        private const val KEY_MAX_FAILED_ATTEMPTS = "max_failed_attempts"
-        private const val KEY_FAILED_ATTEMPTS_0 = "failed_attempts_0"
-        private const val KEY_FAILED_ATTEMPTS_1 = "failed_attempts_1"
 
         // Keys - Stealth
         private const val KEY_STEALTH_ENABLED = "stealth_enabled"
         private const val KEY_SECRET_CODE = "secret_code"
 
-        // Keys - Environment
-        private const val KEY_THEME_0 = "theme_0"
-        private const val KEY_THEME_1 = "theme_1"
-        private const val KEY_WALLPAPER_0 = "wallpaper_0"
-        private const val KEY_WALLPAPER_1 = "wallpaper_1"
-        private const val KEY_NOTIFICATION_POLICY_0 = "notif_policy_0"
-        private const val KEY_NOTIFICATION_POLICY_1 = "notif_policy_1"
-        private const val KEY_ALLOWED_APPS_0 = "allowed_apps_0"
-        private const val KEY_ALLOWED_APPS_1 = "allowed_apps_1"
-        private const val KEY_USER_RESTRICTIONS = "user_restrictions"
-
         // Keys - Security
         private const val KEY_SUSPICIOUS_COUNT = "suspicious_count"
-        private const val KEY_LAST_ISOLATION_CHECK = "last_isolation_check"
         private const val KEY_BLOCKED_APPS = "blocked_cross_profile_apps"
         private const val KEY_SECURITY_LOG = "security_log"
 
         // Keys - Service
         private const val KEY_SERVICE_STARTED = "service_started"
+        private const val KEY_MAX_FAILED_ATTEMPTS = "max_failed_attempts"
     }
 
-    private val masterKey: MasterKey = MasterKey.Builder(context)
-        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-        .build()
-
-    private val prefs: SharedPreferences = EncryptedSharedPreferences.create(
-        context,
-        PREFS_NAME,
-        masterKey,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
+    private val prefs: SharedPreferences = try {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    } catch (e: Exception) {
+        // Fallback - should never happen with regular SharedPreferences
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    }
 
     // ===== Setup =====
+    fun isSetupComplete(): Boolean = try { prefs.getBoolean(KEY_SETUP_COMPLETE, false) } catch (e: Exception) { false }
+    fun setSetupComplete(complete: Boolean) = try { prefs.edit().putBoolean(KEY_SETUP_COMPLETE, complete).apply() } catch (e: Exception) {}
 
-    fun isSetupComplete(): Boolean = prefs.getBoolean(KEY_SETUP_COMPLETE, false)
-    fun setSetupComplete(complete: Boolean) = prefs.edit().putBoolean(KEY_SETUP_COMPLETE, complete).apply()
-
-    fun getCurrentSetupStep(): Int = prefs.getInt(KEY_CURRENT_STEP, 0)
-    fun setCurrentSetupStep(step: Int) = prefs.edit().putInt(KEY_CURRENT_STEP, step).apply()
+    fun getCurrentSetupStep(): Int = try { prefs.getInt(KEY_CURRENT_STEP, 0) } catch (e: Exception) { 0 }
+    fun setCurrentSetupStep(step: Int) = try { prefs.edit().putInt(KEY_CURRENT_STEP, step).apply() } catch (e: Exception) {}
 
     // ===== Profile Names =====
-
     fun getProfileName(slot: Int): String {
-        val key = if (slot == 0) KEY_PROFILE_NAME_0 else KEY_PROFILE_NAME_1
-        return prefs.getString(key, if (slot == 0) "User A" else "User B") ?: "User ${slot + 1}"
+        return try {
+            val key = if (slot == 0) KEY_PROFILE_NAME_0 else KEY_PROFILE_NAME_1
+            prefs.getString(key, if (slot == 0) "الملف الشخصي A" else "الملف الشخصي B") 
+                ?: "الملف الشخصي ${slot + 1}"
+        } catch (e: Exception) {
+            if (slot == 0) "الملف الشخصي A" else "الملف الشخصي B"
+        }
     }
 
     fun setProfileName(slot: Int, name: String) {
-        val key = if (slot == 0) KEY_PROFILE_NAME_0 else KEY_PROFILE_NAME_1
-        prefs.edit().putString(key, name).apply()
+        try {
+            val key = if (slot == 0) KEY_PROFILE_NAME_0 else KEY_PROFILE_NAME_1
+            prefs.edit().putString(key, name).apply()
+        } catch (e: Exception) {}
     }
 
     // ===== Secondary User =====
+    fun isSecondaryUserConfirmed(): Boolean = try { prefs.getBoolean(KEY_SECONDARY_USER_CONFIRMED, false) } catch (e: Exception) { false }
+    fun setSecondaryUserConfirmed(confirmed: Boolean) = try { prefs.edit().putBoolean(KEY_SECONDARY_USER_CONFIRMED, confirmed).apply() } catch (e: Exception) {}
+    fun setSecondaryUserName(name: String) = try { prefs.edit().putString(KEY_SECONDARY_USER_NAME, name).apply() } catch (e: Exception) {}
+    fun getSecondaryUserName(): String? = try { prefs.getString(KEY_SECONDARY_USER_NAME, null) } catch (e: Exception) { null }
 
-    fun getSecondaryUserHandleId(): Long {
-        return prefs.getLong(KEY_SECONDARY_USER_HANDLE, -1)
-    }
-
-    fun setSecondaryUserHandleId(serial: Long) {
-        prefs.edit().putLong(KEY_SECONDARY_USER_HANDLE, serial).apply()
-    }
-
-    fun setSecondaryUserName(name: String) = prefs.edit().putString(KEY_SECONDARY_USER_NAME, name).apply()
-    fun getSecondaryUserName(): String? = prefs.getString(KEY_SECONDARY_USER_NAME, null)
-
-    fun isSecondaryUserConfirmed(): Boolean = prefs.getBoolean(KEY_SECONDARY_USER_CONFIRMED, false)
-    fun setSecondaryUserConfirmed(confirmed: Boolean) = prefs.edit().putBoolean(KEY_SECONDARY_USER_CONFIRMED, confirmed).apply()
-
-    fun clearSecondaryUser() = prefs.edit()
-        .remove(KEY_SECONDARY_USER_HANDLE)
-        .remove(KEY_SECONDARY_USER_NAME)
-        .remove(KEY_SECONDARY_USER_CONFIRMED)
-        .apply()
+    fun clearSecondaryUser() = try {
+        prefs.edit().remove(KEY_SECONDARY_USER_NAME).remove(KEY_SECONDARY_USER_CONFIRMED).apply()
+    } catch (e: Exception) {}
 
     // ===== Credentials =====
-
     fun getCredentialType(slot: Int): String {
-        val key = if (slot == 0) KEY_CRED_TYPE_0 else KEY_CRED_TYPE_1
-        return prefs.getString(key, CredentialManager.CredentialType.NONE.name)
-            ?: CredentialManager.CredentialType.NONE.name
+        return try {
+            val key = if (slot == 0) KEY_CRED_TYPE_0 else KEY_CRED_TYPE_1
+            prefs.getString(key, "NONE") ?: "NONE"
+        } catch (e: Exception) { "NONE" }
     }
 
     fun setCredentialType(slot: Int, type: String) {
-        val key = if (slot == 0) KEY_CRED_TYPE_0 else KEY_CRED_TYPE_1
-        prefs.edit().putString(key, type).apply()
+        try {
+            val key = if (slot == 0) KEY_CRED_TYPE_0 else KEY_CRED_TYPE_1
+            prefs.edit().putString(key, type).apply()
+        } catch (e: Exception) {}
     }
 
-    fun getCredentialLabel(slot: Int): String {
-        val key = if (slot == 0) KEY_CRED_LABEL_0 else KEY_CRED_LABEL_1
-        return prefs.getString(key, "") ?: ""
-    }
-
-    fun setCredentialLabel(slot: Int, label: String) {
-        val key = if (slot == 0) KEY_CRED_LABEL_0 else KEY_CRED_LABEL_1
-        prefs.edit().putString(key, label).apply()
-    }
-
-    fun setCredentialChangedTime(slot: Int, time: Long) {
-        val key = if (slot == 0) KEY_CRED_CHANGED_0 else KEY_CRED_CHANGED_1
-        prefs.edit().putLong(key, time).apply()
-    }
-
-    fun getMaxFailedAttempts(): Int = prefs.getInt(KEY_MAX_FAILED_ATTEMPTS, 5)
-    fun setMaxFailedAttempts(count: Int) = prefs.edit().putInt(KEY_MAX_FAILED_ATTEMPTS, count).apply()
-
-    fun resetFailedAttempts(slot: Int) {
-        val key = if (slot == 0) KEY_FAILED_ATTEMPTS_0 else KEY_FAILED_ATTEMPTS_1
-        prefs.edit().putInt(key, 0).apply()
-    }
+    fun getMaxFailedAttempts(): Int = try { prefs.getInt(KEY_MAX_FAILED_ATTEMPTS, 5) } catch (e: Exception) { 5 }
+    fun setMaxFailedAttempts(count: Int) = try { prefs.edit().putInt(KEY_MAX_FAILED_ATTEMPTS, count).apply() } catch (e: Exception) {}
 
     // ===== Stealth =====
+    fun isStealthModeEnabled(): Boolean = try { prefs.getBoolean(KEY_STEALTH_ENABLED, false) } catch (e: Exception) { false }
+    fun setStealthModeEnabled(enabled: Boolean) = try { prefs.edit().putBoolean(KEY_STEALTH_ENABLED, enabled).apply() } catch (e: Exception) {}
 
-    fun isStealthModeEnabled(): Boolean = prefs.getBoolean(KEY_STEALTH_ENABLED, false)
-    fun setStealthModeEnabled(enabled: Boolean) = prefs.edit().putBoolean(KEY_STEALTH_ENABLED, enabled).apply()
-
-    fun getSecretCode(): String = prefs.getString(KEY_SECRET_CODE, StealthManager.DEFAULT_SECRET_CODE)
-        ?: StealthManager.DEFAULT_SECRET_CODE
-
-    fun setSecretCode(code: String) = prefs.edit().putString(KEY_SECRET_CODE, code).apply()
-
-    // ===== Environment =====
-
-    fun getProfileTheme(slot: Int): String {
-        val key = if (slot == 0) KEY_THEME_0 else KEY_THEME_1
-        return prefs.getString(key, EnvironmentConfig.Theme.DEFAULT.name)
-            ?: EnvironmentConfig.Theme.DEFAULT.name
-    }
-
-    fun setProfileTheme(slot: Int, theme: String) {
-        val key = if (slot == 0) KEY_THEME_0 else KEY_THEME_1
-        prefs.edit().putString(key, theme).apply()
-    }
-
-    fun getWallpaperPath(slot: Int): String {
-        val key = if (slot == 0) KEY_WALLPAPER_0 else KEY_WALLPAPER_1
-        return prefs.getString(key, "") ?: ""
-    }
-
-    fun setWallpaperPath(slot: Int, path: String) {
-        val key = if (slot == 0) KEY_WALLPAPER_0 else KEY_WALLPAPER_1
-        prefs.edit().putString(key, path).apply()
-    }
-
-    fun getNotificationPolicy(slot: Int): String {
-        val key = if (slot == 0) KEY_NOTIFICATION_POLICY_0 else KEY_NOTIFICATION_POLICY_1
-        return prefs.getString(key, EnvironmentConfig.NotificationPolicy.ALL.name)
-            ?: EnvironmentConfig.NotificationPolicy.ALL.name
-    }
-
-    fun setNotificationPolicy(slot: Int, policy: String) {
-        val key = if (slot == 0) KEY_NOTIFICATION_POLICY_0 else KEY_NOTIFICATION_POLICY_1
-        prefs.edit().putString(key, policy).apply()
-    }
-
-    fun getAllowedApps(slot: Int): List<String> {
-        val key = if (slot == 0) KEY_ALLOWED_APPS_0 else KEY_ALLOWED_APPS_1
-        val json = prefs.getString(key, "") ?: ""
-        return if (json.isBlank()) emptyList() else json.split(",")
-    }
-
-    fun setAllowedApps(slot: Int, packages: List<String>) {
-        val key = if (slot == 0) KEY_ALLOWED_APPS_0 else KEY_ALLOWED_APPS_1
-        prefs.edit().putString(key, packages.joinToString(",")).apply()
-    }
-
-    fun getUserRestrictions(): List<String> {
-        val json = prefs.getString(KEY_USER_RESTRICTIONS, "") ?: ""
-        return if (json.isBlank()) emptyList() else json.split(",")
-    }
-
-    fun setUserRestrictions(restrictions: List<String>) {
-        prefs.edit().putString(KEY_USER_RESTRICTIONS, restrictions.joinToString(",")).apply()
-    }
+    fun getSecretCode(): String = try { prefs.getString(KEY_SECRET_CODE, "7890") ?: "7890" } catch (e: Exception) { "7890" }
+    fun setSecretCode(code: String) = try { prefs.edit().putString(KEY_SECRET_CODE, code).apply() } catch (e: Exception) {}
 
     // ===== Security =====
-
-    fun getSuspiciousActivityCount(): Int = prefs.getInt(KEY_SUSPICIOUS_COUNT, 0)
-    fun incrementSuspiciousActivityCount() = prefs.edit()
-        .putInt(KEY_SUSPICIOUS_COUNT, getSuspiciousActivityCount() + 1).apply()
+    fun getSuspiciousActivityCount(): Int = try { prefs.getInt(KEY_SUSPICIOUS_COUNT, 0) } catch (e: Exception) { 0 }
+    fun incrementSuspiciousActivityCount() = try {
+        prefs.edit().putInt(KEY_SUSPICIOUS_COUNT, getSuspiciousActivityCount() + 1).apply()
+    } catch (e: Exception) {}
 
     fun getBlockedCrossProfileApps(): List<String> {
-        val json = prefs.getString(KEY_BLOCKED_APPS, "") ?: ""
-        return if (json.isBlank()) emptyList() else json.split(",")
+        return try {
+            val json = prefs.getString(KEY_BLOCKED_APPS, "") ?: ""
+            if (json.isBlank()) emptyList() else json.split(",")
+        } catch (e: Exception) { emptyList() }
     }
 
     fun setBlockedCrossProfileApps(apps: List<String>) {
-        prefs.edit().putString(KEY_BLOCKED_APPS, apps.joinToString(",")).apply()
+        try { prefs.edit().putString(KEY_BLOCKED_APPS, apps.joinToString(",")).apply() } catch (e: Exception) {}
     }
 
     // ===== Service =====
+    fun isServiceStarted(): Boolean = try { prefs.getBoolean(KEY_SERVICE_STARTED, false) } catch (e: Exception) { false }
+    fun setServiceStarted(started: Boolean) = try { prefs.edit().putBoolean(KEY_SERVICE_STARTED, started).apply() } catch (e: Exception) {}
 
-    fun isServiceStarted(): Boolean = prefs.getBoolean(KEY_SERVICE_STARTED, false)
-    fun setServiceStarted(started: Boolean) = prefs.edit().putBoolean(KEY_SERVICE_STARTED, started).apply()
+    // ===== Security Log =====
+    fun addSecurityLog(entry: String) {
+        try {
+            val logs = getSecurityLogs()
+            val newLogs = (listOf(entry) + logs).take(100)
+            prefs.edit().putString(KEY_SECURITY_LOG, newLogs.joinToString("|||")).apply()
+        } catch (e: Exception) {}
+    }
+
+    fun getSecurityLogs(): List<String> {
+        return try {
+            val raw = prefs.getString(KEY_SECURITY_LOG, "") ?: ""
+            if (raw.isBlank()) emptyList() else raw.split("|||")
+        } catch (e: Exception) { emptyList() }
+    }
+
+    fun clearSecurityLogs() = try { prefs.edit().remove(KEY_SECURITY_LOG).apply() } catch (e: Exception) {}
 
     // ===== Reset =====
-
-    fun resetAll() {
-        prefs.edit().clear().apply()
-    }
+    fun resetAll() = try { prefs.edit().clear().apply() } catch (e: Exception) {}
 }

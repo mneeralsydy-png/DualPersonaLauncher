@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.dualpersona.system.app-mergeDebugResources-46:/values-nl/values-nl.xml",
+            "outputFile": "com.dualpersona.system.app-mergeDebugResources-37:/values-nl/values-nl.xml",
             "map": [
                 {
                     "source": "/home/z/.gradle/caches/transforms-3/3c6da16fc08c5e7b7caed394bbbfefaa/transformed/material-1.11.0/res/values-nl/values-nl.xml",

@@ -1,10 +1,10 @@
 [
     {
-        "merged": "com.dualpersona.system.app-mergeDebugResources-47:/layout/activity_dashboard.xml",
-        "source": "com.dualpersona.system.app-main-50:/layout/activity_dashboard.xml"
+        "merged": "com.dualpersona.system.app-mergeDebugResources-38:/layout/activity_setup_wizard.xml",
+        "source": "com.dualpersona.system.app-main-41:/layout/activity_setup_wizard.xml"
     },
     {
-        "merged": "com.dualpersona.system.app-mergeDebugResources-47:/layout/activity_setup_wizard.xml",
-        "source": "com.dualpersona.system.app-main-50:/layout/activity_setup_wizard.xml"
+        "merged": "com.dualpersona.system.app-mergeDebugResources-38:/layout/activity_dashboard.xml",
+        "source": "com.dualpersona.system.app-main-41:/layout/activity_dashboard.xml"
     }
 ]

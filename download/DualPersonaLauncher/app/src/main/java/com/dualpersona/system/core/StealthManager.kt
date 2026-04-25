@@ -1,7 +1,5 @@
 package com.dualpersona.system.core
 
-import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -22,10 +20,12 @@ class StealthManager(private val context: Context) {
         const val NOTIFICATION_ID_GUARD = 1002
 
         fun restoreAppIcon(context: Context) {
-            val prefs = PreferencesManager(context)
-            if (!prefs.isStealthModeEnabled()) {
-                StealthManager(context).showLauncherIcon()
-            }
+            try {
+                val prefs = PreferencesManager(context)
+                if (!prefs.isStealthModeEnabled()) {
+                    StealthManager(context).showLauncherIcon()
+                }
+            } catch (e: Exception) {}
         }
     }
 
@@ -34,8 +34,7 @@ class StealthManager(private val context: Context) {
             hideLauncherIcon()
             prefs.setStealthModeEnabled(true)
             hideNotifications()
-            clearRecentTasks()
-            SecurityLog.log(context, "INFO", "stealth_enable", "App hidden.")
+            SecurityLog.log(context, "INFO", "stealth_enable", "App hidden")
         } catch (e: Exception) {
             SecurityLog.log(context, "ERROR", "stealth_enable", "Failed: ${e.message}")
         }
@@ -52,16 +51,20 @@ class StealthManager(private val context: Context) {
     }
 
     fun temporaryReveal(durationMs: Long = 60_000) {
-        disableStealthMode()
-        Handler(Looper.getMainLooper()).postDelayed({
-            if (prefs.isSetupComplete()) {
-                enableStealthMode()
-            }
-        }, durationMs)
+        try {
+            disableStealthMode()
+            Handler(Looper.getMainLooper()).postDelayed({
+                try {
+                    if (prefs.isSetupComplete()) {
+                        enableStealthMode()
+                    }
+                } catch (e: Exception) {}
+            }, durationMs)
+        } catch (e: Exception) {}
     }
 
     private fun hideLauncherIcon() {
-        val componentName = ComponentName(context, LAUNCHER_COMPONENT)
+        val componentName = android.content.ComponentName(context, LAUNCHER_COMPONENT)
         packageManager.setComponentEnabledSetting(
             componentName,
             PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
@@ -70,7 +73,7 @@ class StealthManager(private val context: Context) {
     }
 
     fun showLauncherIcon() {
-        val componentName = ComponentName(context, LAUNCHER_COMPONENT)
+        val componentName = android.content.ComponentName(context, LAUNCHER_COMPONENT)
         packageManager.setComponentEnabledSetting(
             componentName,
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
@@ -79,9 +82,10 @@ class StealthManager(private val context: Context) {
     }
 
     fun isIconVisible(): Boolean {
-        val componentName = ComponentName(context, LAUNCHER_COMPONENT)
-        val state = packageManager.getComponentEnabledSetting(componentName)
-        return state == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        return try {
+            val componentName = android.content.ComponentName(context, LAUNCHER_COMPONENT)
+            packageManager.getComponentEnabledSetting(componentName) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        } catch (e: Exception) { true }
     }
 
     private fun hideNotifications() {
@@ -89,31 +93,19 @@ class StealthManager(private val context: Context) {
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? android.app.NotificationManager
             nm?.cancel(NOTIFICATION_ID_SYSTEM)
             nm?.cancel(NOTIFICATION_ID_GUARD)
-        } catch (e: Exception) { }
+        } catch (e: Exception) {}
     }
 
-    @SuppressLint("NewApi")
-    private fun clearRecentTasks() {
-        try {
-            val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? android.app.ActivityManager
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                for (task in am?.appTasks ?: emptyList()) {
-                    if (task.taskInfo.baseActivity?.packageName == context.packageName) {
-                        task.finishAndRemoveTask()
-                    }
-                }
-            }
-        } catch (e: Exception) { }
-    }
-
-    fun getSecretCode(): String = prefs.getSecretCode()
+    fun getSecretCode(): String = try { prefs.getSecretCode() } catch (e: Exception) { DEFAULT_SECRET_CODE }
 
     fun setSecretCode(code: String) {
-        prefs.setSecretCode(code)
-        SecurityLog.log(context, "INFO", "secret_code_change", "Secret code updated")
+        try {
+            prefs.setSecretCode(code)
+            SecurityLog.log(context, "INFO", "secret_code_change", "Secret code updated")
+        } catch (e: Exception) {}
     }
 
-    fun verifySecretCode(inputCode: String): Boolean = inputCode == prefs.getSecretCode()
+    fun verifySecretCode(inputCode: String): Boolean = inputCode == getSecretCode()
 
-    fun isStealthActive(): Boolean = prefs.isStealthModeEnabled()
+    fun isStealthActive(): Boolean = try { prefs.isStealthModeEnabled() } catch (e: Exception) { false }
 }

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.dualpersona.system.app-mergeDebugResources-46:/values-iw/values-iw.xml",
+            "outputFile": "com.dualpersona.system.app-mergeDebugResources-37:/values-iw/values-iw.xml",
             "map": [
                 {
                     "source": "/home/z/.gradle/caches/transforms-3/9756fab58daf3b55028a539310104216/transformed/appcompat-1.6.1/res/values-iw/values-iw.xml",
